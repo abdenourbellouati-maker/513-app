@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق 513 - الإدارة اليومية</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        :root {
+            --primary: #2c3e50; --accent: #3498db; --success: #27ae60; --danger: #e74c3c; --warning: #f39c12; --light: #ecf0f1;
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--light); margin: 0; padding: 10px; }
+        .container { max-width: 600px; margin: auto; }
+        header { text-align: center; padding: 15px; background: var(--primary); color: white; border-radius: 10px; margin-bottom: 15px; }
+        .card { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .item-info h3 { margin: 0; color: var(--primary); }
+        .balance { font-size: 1.5rem; font-weight: bold; color: var(--accent); }
+        .actions { display: flex; gap: 5px; }
+        button { border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn-in { background: var(--success); color: white; }
+        .btn-out { background: var(--danger); color: white; }
+        .btn-ret { background: var(--warning); color: white; }
+        .btn-edit { background: #7f8c8d; color: white; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
+        .modal-content { background: white; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; }
+        input, select { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        .report-section { margin-top: 20px; background: white; padding: 15px; border-radius: 10px; text-align: center; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header><h1>تطبيق 513 المحاسبي</h1></header>
+    
+    <div id="dashboard">
+        </div>
+
+    <div class="report-section">
+        <h3>التقارير والاستخراج</h3>
+        <button onclick="generatePDF()" style="background: var(--primary); color: white; width: 100%;">تحميل تقرير الشهر الحالي (PDF)</button>
+    </div>
+</div>
+
+<div id="actionModal" class="modal">
+    <div class="modal-content">
+        <h3 id="modalTitle">إضافة عملية</h3>
+        <input type="number" id="amount" placeholder="الكمية">
+        <input type="text" id="notes" placeholder="ملاحظات (اختياري)">
+        <button onclick="submitData()" id="submitBtn" style="width: 100%; background: var(--success); color: white; padding: 12px;">تأكيد الحفظ</button>
+        <button onclick="closeModal()" style="width: 100%; background: #ccc; margin-top: 5px;">إلغاء</button>
+    </div>
+</div>
+
+<script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbw0Varqhe--14obFdhVeuw1637eJ0kMV_yRKtWr9NcXHGel5Uyl1ftKYlYnE2borIiK/exec";
+    const items = ["CH30", "LR", "PR", "CP", "EDAHABIA", "CODE"];
+    let currentItem = "";
+    let currentType = "";
+    let fullData = [];
+
+    async function fetchData() {
+        const response = await fetch(API_URL);
+        fullData = await response.json();
+        renderDashboard();
+    }
+
+    function renderDashboard() {
+        const dashboard = document.getElementById('dashboard');
+        dashboard.innerHTML = "";
+        
+        items.forEach(item => {
+            let balance = 0;
+            // الحساب التراكمي: (Initial + دخل) - (خرج + RETOUR + Adjustment)
+            fullData.slice(1).forEach(row => {
+                if(row[1] === item) {
+                    let val = parseFloat(row[3]) || 0;
+                    if(row[2] === "Initial" || row[2] === "دخل") balance += val;
+                    else if(row[2] === "خرج" || row[2] === "RETOUR") balance -= val;
+                    else if(row[2] === "Adjustment") balance = val; // التعديل يضبط الرقم مباشرة
+                }
+            });
+
+            dashboard.innerHTML += `
+                <div class="card">
+                    <div class="item-info">
+                        <h3>${item}</h3>
+                        <div class="balance" id="bal-${item}">${balance}</div>
+                    </div>
+                    <div class="actions">
+                        <button class="btn-in" onclick="openModal('${item}', 'دخل')">+</button>
+                        <button class="btn-out" onclick="openModal('${item}', 'خرج')">-</button>
+                        <button class="btn-ret" onclick="openModal('${item}', 'RETOUR')">R</button>
+                        <button class="btn-edit" onclick="openModal('${item}', 'Adjustment')">✎</button>
+                    </div>
+                </div>`;
+        });
+    }
+
+    function openModal(item, type) {
+        currentItem = item;
+        currentType = type;
+        document.getElementById('modalTitle').innerText = `${type} : ${item}`;
+        document.getElementById('actionModal').style.display = 'flex';
+    }
+
+    function closeModal() { document.getElementById('actionModal').style.display = 'none'; }
+
+    async function submitData() {
+        const amount = document.getElementById('amount').value;
+        const notes = document.getElementById('notes').value;
+        if(!amount) return alert("يرجى إدخال الكمية");
+
+        const btn = document.getElementById('submitBtn');
+        btn.innerText = "جاري الحفظ...";
+        btn.disabled = true;
+
+        await fetch(API_URL, {
+            method: "POST",
+            body: JSON.stringify({ item: currentItem, type: currentType, amount: amount, notes: notes })
+        });
+
+        location.reload(); // تحديث الصفحة لرؤية النتائج
+    }
+
+    async function generatePDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.text("تقرير 513 الشهري", 105, 10, { align: "center" });
+        
+        // تحضير البيانات للجدول
+        let tableRows = fullData.slice(1).map(row => [
+            new Date(row[0]).toLocaleDateString('ar-DZ'), row[1], row[2], row[3], row[4]
+        ]);
+
+        doc.autoTable({
+            head: [['التاريخ', 'العنصر', 'النوع', 'الكمية', 'ملاحظات']],
+            body: tableRows,
+            styles: { font: "courier" }
+        });
+        doc.save("Report_513.pdf");
+    }
+
+    fetchData();
+</script>
+</body>
+</html>
