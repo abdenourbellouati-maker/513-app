@@ -3,145 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيق 513 - الإدارة اليومية</title>
+    <title>نظام 513 الاحترافي</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <style>
         :root {
-            --primary: #2c3e50; --accent: #3498db; --success: #27ae60; --danger: #e74c3c; --warning: #f39c12; --light: #ecf0f1;
+            --bg: #0f172a; --card: #1e293b; --text: #f8fafc;
+            --primary: #38bdf8; --success: #22c55e; --danger: #ef4444; --warning: #f59e0b;
         }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--light); margin: 0; padding: 10px; }
-        .container { max-width: 600px; margin: auto; }
-        header { text-align: center; padding: 15px; background: var(--primary); color: white; border-radius: 10px; margin-bottom: 15px; }
-        .card { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .item-info h3 { margin: 0; color: var(--primary); }
-        .balance { font-size: 1.5rem; font-weight: bold; color: var(--accent); }
-        .actions { display: flex; gap: 5px; }
-        button { border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        .btn-in { background: var(--success); color: white; }
-        .btn-out { background: var(--danger); color: white; }
-        .btn-ret { background: var(--warning); color: white; }
-        .btn-edit { background: #7f8c8d; color: white; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
-        .modal-content { background: white; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; }
-        input, select { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
-        .report-section { margin-top: 20px; background: white; padding: 15px; border-radius: 10px; text-align: center; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid #334155; padding-bottom: 15px; }
+        .time-box { text-align: left; font-family: monospace; color: var(--primary); }
+        
+        .grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
+        .item-card { background: var(--card); border-radius: 16px; padding: 20px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #334155; }
+        .info h3 { margin: 0; font-size: 1.1rem; color: #94a3b8; }
+        .info .val { font-size: 2rem; font-weight: 800; color: var(--text); }
+        
+        .btn-group { display: flex; gap: 8px; }
+        .btn { width: 45px; height: 45px; border-radius: 12px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: bold; transition: 0.2s; }
+        .btn-plus { background: rgba(34, 197, 94, 0.2); color: var(--success); border: 1px solid var(--success); }
+        .btn-minus { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); }
+        .btn-more { background: rgba(56, 189, 248, 0.1); color: var(--primary); font-size: 0.9rem; width: auto; padding: 0 15px; }
+        
+        .loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 5px; background: var(--primary); z-index: 1000; animation: load 2s infinite; }
+        @keyframes load { 0% { width: 0; } 100% { width: 100%; } }
+        
+        /* التنبيه */
+        #toast { visibility: hidden; min-width: 200px; background-color: var(--success); color: #fff; text-align: center; border-radius: 8px; padding: 12px; position: fixed; z-index: 1; bottom: 30px; left: 50%; transform: translateX(-50%); }
+        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <header><h1>تطبيق 513 المحاسبي</h1></header>
-    
-    <div id="dashboard">
-        </div>
+<div id="loader" class="loading-overlay"></div>
 
-    <div class="report-section">
-        <h3>التقارير والاستخراج</h3>
-        <button onclick="generatePDF()" style="background: var(--primary); color: white; width: 100%;">تحميل تقرير الشهر الحالي (PDF)</button>
+<div class="header">
+    <div>
+        <h2 style="margin:0">تطبيق 513</h2>
+        <span id="dateText" style="font-size: 0.8rem; color: #64748b;"></span>
+    </div>
+    <div class="time-box">
+        <div id="clock" style="font-size: 1.4rem; font-weight: bold;">00:00:00</div>
     </div>
 </div>
 
-<div id="actionModal" class="modal">
-    <div class="modal-content">
-        <h3 id="modalTitle">إضافة عملية</h3>
-        <input type="number" id="amount" placeholder="الكمية">
-        <input type="text" id="notes" placeholder="ملاحظات (اختياري)">
-        <button onclick="submitData()" id="submitBtn" style="width: 100%; background: var(--success); color: white; padding: 12px;">تأكيد الحفظ</button>
-        <button onclick="closeModal()" style="width: 100%; background: #ccc; margin-top: 5px;">إلغاء</button>
+<div class="grid" id="mainGrid">
     </div>
+
+<div style="margin-top: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+    <button onclick="generatePDF()" class="btn btn-more" style="background:#334155; color:white">تقرير PDF</button>
+    <button onclick="window.location.reload()" class="btn btn-more" style="background:#334155; color:white">تحديث البيانات</button>
 </div>
+
+<div id="toast">تم التحديث بنجاح ✅</div>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbw0Varqhe--14obFdhVeuw1637eJ0kMV_yRKtWr9NcXHGel5Uyl1ftKYlYnE2borIiK/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbyaNujQ7MVEe5fHUEr6iK1hoObeREbAcF-wez-n__szb8wO-Q2eO4UheOwcW36NqNms/exec";
     const items = ["CH30", "LR", "PR", "CP", "EDAHABIA", "CODE"];
-    let currentItem = "";
-    let currentType = "";
     let fullData = [];
 
+    // تحديث الوقت
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('clock').innerText = now.toLocaleTimeString('en-GB');
+        document.getElementById('dateText').innerText = now.toLocaleDateString('ar-DZ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    }
+    setInterval(updateClock, 1000);
+
     async function fetchData() {
-        const response = await fetch(API_URL);
-        fullData = await response.json();
-        renderDashboard();
+        showLoader(true);
+        try {
+            const response = await fetch(API_URL);
+            fullData = await response.json();
+            render();
+        } catch (e) { alert("خطأ في الاتصال"); }
+        showLoader(false);
     }
 
-    function renderDashboard() {
-        const dashboard = document.getElementById('dashboard');
-        dashboard.innerHTML = "";
+    function render() {
+        const grid = document.getElementById('mainGrid');
+        grid.innerHTML = "";
         
         items.forEach(item => {
             let balance = 0;
-            // الحساب التراكمي: (Initial + دخل) - (خرج + RETOUR + Adjustment)
             fullData.slice(1).forEach(row => {
                 if(row[1] === item) {
                     let val = parseFloat(row[3]) || 0;
-                    if(row[2] === "Initial" || row[2] === "دخل") balance += val;
+                    if(row[2] === "دخل" || row[2] === "Initial") balance += val;
                     else if(row[2] === "خرج" || row[2] === "RETOUR") balance -= val;
-                    else if(row[2] === "Adjustment") balance = val; // التعديل يضبط الرقم مباشرة
+                    else if(row[2] === "Adjustment") balance = val;
                 }
             });
 
-            dashboard.innerHTML += `
-                <div class="card">
-                    <div class="item-info">
+            grid.innerHTML += `
+                <div class="item-card">
+                    <div class="info">
                         <h3>${item}</h3>
-                        <div class="balance" id="bal-${item}">${balance}</div>
+                        <div class="val" id="val-${item}">${balance}</div>
                     </div>
-                    <div class="actions">
-                        <button class="btn-in" onclick="openModal('${item}', 'دخل')">+</button>
-                        <button class="btn-out" onclick="openModal('${item}', 'خرج')">-</button>
-                        <button class="btn-ret" onclick="openModal('${item}', 'RETOUR')">R</button>
-                        <button class="btn-edit" onclick="openModal('${item}', 'Adjustment')">✎</button>
+                    <div class="btn-group">
+                        <button class="btn btn-minus" onclick="quickAction('${item}', 'خرج', 1)">-</button>
+                        <button class="btn btn-plus" onclick="quickAction('${item}', 'دخل', 1)">+</button>
+                        <button class="btn btn-more" onclick="customAction('${item}')">...</button>
                     </div>
                 </div>`;
         });
     }
 
-    function openModal(item, type) {
-        currentItem = item;
-        currentType = type;
-        document.getElementById('modalTitle').innerText = `${type} : ${item}`;
-        document.getElementById('actionModal').style.display = 'flex';
-    }
-
-    function closeModal() { document.getElementById('actionModal').style.display = 'none'; }
-
-    async function submitData() {
-        const amount = document.getElementById('amount').value;
-        const notes = document.getElementById('notes').value;
-        if(!amount) return alert("يرجى إدخال الكمية");
-
-        const btn = document.getElementById('submitBtn');
-        btn.innerText = "جاري الحفظ...";
-        btn.disabled = true;
+    async function quickAction(item, type, amount) {
+        showLoader(true);
+        // تحديث واجهة المستخدم فوراً (Optimistic UI) لربح الوقت
+        const el = document.getElementById(`val-${item}`);
+        let currentVal = parseFloat(el.innerText);
+        el.innerText = (type === 'دخل') ? currentVal + amount : currentVal - amount;
 
         await fetch(API_URL, {
             method: "POST",
-            body: JSON.stringify({ item: currentItem, type: currentType, amount: amount, notes: notes })
+            body: JSON.stringify({ item: item, type: type, amount: amount, notes: "سريع" })
         });
+        
+        showToast();
+        showLoader(false);
+    }
 
-        location.reload(); // تحديث الصفحة لرؤية النتائج
+    function customAction(item) {
+        const type = prompt("اختر النوع: (دخل، خرج، RETOUR، Adjustment)");
+        if (!type) return;
+        const amount = prompt("أدخل الكمية:");
+        if (!amount) return;
+        quickAction(item, type, parseFloat(amount));
+    }
+
+    function showLoader(show) { document.getElementById('loader').style.display = show ? 'block' : 'none'; }
+    
+    function showToast() {
+        const x = document.getElementById("toast");
+        x.className = "show";
+        setTimeout(() => { x.className = x.className.replace("show", ""); }, 3000);
     }
 
     async function generatePDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        doc.text("تقرير 513 الشهري", 105, 10, { align: "center" });
-        
-        // تحضير البيانات للجدول
-        let tableRows = fullData.slice(1).map(row => [
-            new Date(row[0]).toLocaleDateString('ar-DZ'), row[1], row[2], row[3], row[4]
-        ]);
-
+        doc.text("تقرير 513 - " + new Date().toLocaleDateString(), 10, 10);
         doc.autoTable({
-            head: [['التاريخ', 'العنصر', 'النوع', 'الكمية', 'ملاحظات']],
-            body: tableRows,
-            styles: { font: "courier" }
+            head: [['التاريخ', 'العنصر', 'النوع', 'الكمية']],
+            body: fullData.slice(1).map(r => [new Date(r[0]).toLocaleString(), r[1], r[2], r[3]]),
         });
-        doc.save("Report_513.pdf");
+        doc.save("Report.pdf");
     }
 
     fetchData();
+    updateClock();
 </script>
 </body>
 </html>
