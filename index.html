@@ -2,41 +2,73 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>نظام 513 الاحترافي v5</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>نظام 513 المحمول</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <style>
-        :root { --p: #2563eb; --bg: #f8fafc; --card: #ffffff; --txt: #0f172a; --s: #10b981; --d: #ef4444; }
-        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--txt); margin: 0; padding: 10px; }
-        .header { background: var(--p); color: white; padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 15px; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-        .card { background: var(--card); border-radius: 16px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-right: 5px solid var(--p); }
-        .card-h { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .bal { background: #1e293b; color: white; padding: 4px 12px; border-radius: 8px; font-weight: bold; font-size: 1.2rem; }
-        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 15px; text-align: center; }
-        .s-box { background: #f1f5f9; padding: 8px 2px; border-radius: 8px; }
-        .s-lbl { font-size: 0.65rem; color: #64748b; display: block; }
-        .s-val { font-weight: bold; font-size: 1rem; }
-        .btn-group { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-        button { border: none; padding: 10px; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        button:active { transform: scale(0.9); }
-        .b-plus { background: var(--s); } .b-minus { background: var(--d); } .b-ret { background: #f59e0b; color: black; }
-        .edit-zone { display: flex; gap: 5px; background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px dashed #cbd5e1; }
-        input { width: 60px; padding: 8px; border: 1px solid #ccc; border-radius: 6px; text-align: center; }
-        #sync { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #000; color: #fff; padding: 5px 20px; border-radius: 20px; font-size: 12px; display: none; }
+        :root { --p: #007aff; --bg: #f2f2f7; --card: #ffffff; --txt: #1c1c1e; --s: #34c759; --d: #ff3b30; --w: #ff9500; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--txt); margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
+        
+        /* الهيدر العصري */
+        .header { background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; padding: 15px; border-bottom: 1px solid #d1d1d6; display: flex; flex-direction: column; align-items: center; }
+        .date-container { width: 100%; display: flex; gap: 10px; margin-top: 10px; }
+        input[type="date"] { flex: 1; border: none; background: #e5e5ea; padding: 12px; border-radius: 12px; font-weight: bold; font-size: 1rem; color: var(--txt); }
+
+        /* الشبكة والبطاقات */
+        .grid { padding: 10px; display: grid; grid-template-columns: 1fr; gap: 15px; }
+        .card { background: var(--card); border-radius: 20px; padding: 18px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+        .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .item-name { font-size: 1.4rem; font-weight: 800; color: var(--p); }
+        .bal-badge { background: var(--txt); color: white; padding: 6px 15px; border-radius: 12px; font-size: 1.2rem; font-weight: bold; }
+
+        /* الإحصائيات */
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 15px; }
+        .stat-box { background: #f8f8f8; padding: 8px 2px; border-radius: 10px; text-align: center; border: 1px solid #eee; }
+        .st-lbl { font-size: 0.6rem; color: #8e8e93; display: block; }
+        .st-val { font-size: 0.9rem; font-weight: bold; }
+
+        /* أزرار الهاتف الكبيرة */
+        .action-btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        .btn { border: none; padding: 15px 5px; border-radius: 15px; color: white; font-weight: bold; font-size: 1rem; display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; }
+        .btn:active { opacity: 0.7; transform: scale(0.95); }
+        .b-in { background: var(--s); } .b-out { background: var(--d); } .b-ret { background: var(--w); }
+        .btn span { font-size: 0.7rem; opacity: 0.9; }
+
+        /* التعديل المخصص */
+        .manual-zone { margin-top: 15px; display: flex; gap: 8px; padding-top: 15px; border-top: 1px solid #f2f2f7; }
+        .manual-zone input { flex: 1; border: 1px solid #d1d1d6; padding: 10px; border-radius: 10px; text-align: center; font-size: 1rem; }
+        .b-adj { background: #8e8e93; color: white; border: none; padding: 0 15px; border-radius: 10px; font-weight: bold; }
+
+        /* التقارير */
+        .footer-reports { padding: 20px; display: flex; gap: 10px; background: white; margin-top: 20px; border-top: 1px solid #d1d1d6; }
+        .rep-btn { flex: 1; padding: 15px; border-radius: 15px; border: none; background: var(--p); color: white; font-weight: bold; font-size: 0.9rem; }
+
+        /* مؤشر المزامنة */
+        #sync { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.7rem; display: none; z-index: 1000; }
     </style>
 </head>
 <body>
 
-<div id="sync">جاري المزامنة...</div>
+<div id="sync">جاري الحفظ في السحاب...</div>
 
-<div class="header">
-    <h2 style="margin:0 0 10px 0;">نظام الإدارة الشامل</h2>
-    <input type="date" id="mDate" onchange="fetchData()" style="padding:10px; border-radius:8px; width:80%;">
+<header class="header">
+    <div style="font-weight: 900; font-size: 1.2rem; color: var(--p);">لوحة تحكم 513</div>
+    <div class="date-container">
+        <input type="date" id="mDate" onchange="fetchData()">
+        <button onclick="fetchData()" style="background:#e5e5ea; border:none; border-radius:12px; padding:0 15px;">🔄</button>
+    </div>
+</header>
+
+<div class="grid" id="mainGrid"></div>
+
+<div class="footer-reports">
+    <button class="rep-btn" style="background:#444;" onclick="exportPDF('week')">📊 تقرير أسبوعي</button>
+    <button class="rep-btn" style="background:#444;" onclick="exportPDF('month')">📅 تقرير شهري</button>
 </div>
 
-<div id="grid"></div>
-
 <script>
-    // --- ضع رابطك هنا ---
+    // ضع رابط الـ URL الخاص بك هنا
     const URL = "https://script.google.com/macros/s/AKfycbzlNw95iTW4K7lrHAGWr_sSS6mELbVaxNqc0ly9B_Kj9zjbO4myFZ_MaJFFmbKfTHLH/exec";
     
     const ITEMS = ["CH30", "LR", "PR", "CP", "EDAHABIA", "CODE"];
@@ -50,85 +82,77 @@
             const r = await fetch(URL);
             DB = await r.json();
             render();
-        } catch(e) { console.error("Error"); }
+        } catch(e) { console.error("Error fetching"); }
         document.getElementById('sync').style.display = 'none';
     }
 
     function render() {
-        const grid = document.getElementById('grid');
-        const selDate = new Date(document.getElementById('mDate').value);
-        selDate.setHours(0,0,0,0);
+        const grid = document.getElementById('mainGrid');
+        const selD = document.getElementById('mDate').value;
         grid.innerHTML = "";
 
-        // معالجة البيانات مسبقاً لزيادة السرعة
-        const sortedLogs = DB.slice(1).map(l => ({
-            date: new Date(l[0]),
-            item: l[1],
-            type: l[2],
-            amt: parseFloat(l[3]) || 0
-        })).sort((a,b) => a.date - b.date);
+        // معالجة البيانات
+        const logs = DB.slice(1).sort((a,b) => String(a[0]).localeCompare(String(b[0])));
 
         ITEMS.forEach(item => {
             let s = { prev: 0, in: 0, out: 0, ret: 0 };
-            
-            sortedLogs.filter(l => l.item === item).forEach(l => {
-                const d = new Date(l.date); d.setHours(0,0,0,0);
-                if (d < selDate) {
-                    if (l.type === "دخل" || l.type === "Initial") s.prev += l.amt;
-                    else if (l.type === "خرج" || l.type === "RETOUR") s.prev -= l.amt;
-                    else if (l.type === "Adjustment") s.prev = l.amt;
-                } else if (d.getTime() === selDate.getTime()) {
-                    if (l.type === "دخل") s.in += l.amt;
-                    else if (l.type === "خرج") s.out += l.amt;
-                    else if (l.type === "RETOUR") s.ret += l.amt;
-                    else if (l.type === "Adjustment") { s.prev = l.amt; s.in = 0; s.out = 0; s.ret = 0; }
+            logs.forEach(l => {
+                if(l[1] !== item) return;
+                const d = String(l[0]).split('T')[0];
+                const amt = parseFloat(l[3]) || 0;
+                if(d < selD) {
+                    if(l[2]==='دخل') s.prev+=amt; else if(l[2]==='خرج'||l[2]==='RETOUR') s.prev-=amt; else if(l[2]==='Adjustment') s.prev=amt;
+                } else if(d === selD) {
+                    if(l[2]==='دخل') s.in+=amt; else if(l[2]==='خرج') s.out+=amt; else if(l[2]==='RETOUR') s.ret+=amt; else if(l[2]==='Adjustment') {s.prev=amt; s.in=0; s.out=0; s.ret=0;}
                 }
             });
 
-            const currentBal = (s.prev + s.in) - (s.out + s.ret);
+            const bal = (s.prev + s.in) - (s.out + s.ret);
 
             grid.innerHTML += `
                 <div class="card">
-                    <div class="card-h"><b>${item}</b> <span class="bal" id="bal-${item}">${currentBal}</span></div>
-                    <div class="stats">
-                        <div class="s-box"><span class="s-lbl">سابق</span><span class="s-val">${s.prev}</span></div>
-                        <div class="s-box" style="color:var(--s)"><span class="s-lbl">دخل</span><span class="s-val" id="in-${item}">+${s.in}</span></div>
-                        <div class="s-box" style="color:var(--d)"><span class="s-lbl">خرج</span><span class="s-val" id="out-${item}">-${s.out}</span></div>
-                        <div class="s-box" style="color:#f59e0b"><span class="s-lbl">مرجع</span><span class="s-val" id="ret-${item}">-${s.ret}</span></div>
+                    <div class="card-top">
+                        <span class="item-name">${item}</span>
+                        <span class="bal-badge" id="bal-${item}">${bal}</span>
                     </div>
-                    <div class="btn-group">
-                        <button class="b-plus" onclick="quickAction('${item}','دخل',1)">+1</button>
-                        <button class="b-minus" onclick="quickAction('${item}','خرج',1)">-1</button>
-                        <button class="b-ret" onclick="quickAction('${item}','RETOUR',1)">مرجع</button>
+                    <div class="stats-grid">
+                        <div class="stat-box"><span class="st-lbl">سابق</span><span class="st-val">${s.prev}</span></div>
+                        <div class="stat-box" style="color:var(--s)"><span class="st-lbl">دخل</span><span class="st-val" id="in-${item}">+${s.in}</span></div>
+                        <div class="stat-box" style="color:var(--d)"><span class="st-lbl">خرج</span><span class="st-val" id="out-${item}">-${s.out}</span></div>
+                        <div class="stat-box" style="color:var(--w)"><span class="st-lbl">مرجع</span><span class="st-val" id="ret-${item}">-${s.ret}</span></div>
                     </div>
-                    <div class="edit-zone">
-                        <input type="number" id="amt-${item}" placeholder="كمية">
-                        <button onclick="manualAdd('${item}')" style="background:#475569; flex:1;">تعديل مخصص / جرد</button>
+                    <div class="action-btns">
+                        <button class="btn b-in" onclick="quick('${item}','دخل',1)">+1 <span>دخل</span></button>
+                        <button class="btn b-out" onclick="sendOptimistic('${item}','خرج',1)">-1 <span>خرج</span></button>
+                        <button class="btn b-ret" onclick="sendOptimistic('${item}','RETOUR',1)">↩ <span>مرجع</span></button>
+                    </div>
+                    <div class="manual-zone">
+                        <input type="number" id="amt-${item}" placeholder="كمية مخصصة">
+                        <button class="b-adj" onclick="manual('${item}')">حفظ</button>
                     </div>
                 </div>`;
         });
     }
 
-    // إضافة فورية دون انتظار السيرفر لزيادة السرعة
-    function quickAction(item, type, amt) {
-        // تحديث الواجهة فوراً (Optimistic UI)
+    // المزامنة الفورية (تحديث الرقم في الموقع قبل وصول الرد من السيرفر)
+    function sendOptimistic(item, type, amt) {
+        const balEl = document.getElementById(`bal-${item}`);
         const inEl = document.getElementById(`in-${item}`);
         const outEl = document.getElementById(`out-${item}`);
         const retEl = document.getElementById(`ret-${item}`);
-        const balEl = document.getElementById(`bal-${item}`);
 
-        let val = parseFloat(balEl.innerText);
-        if(type === 'دخل') { 
-            val += amt; 
-            inEl.innerText = "+" + (parseFloat(inEl.innerText.replace('+','')) + amt);
-        } else { 
-            val -= amt; 
-            if(type === 'خرج') outEl.innerText = "-" + (parseFloat(outEl.innerText.replace('-','')) + amt);
-            if(type === 'RETOUR') retEl.innerText = "-" + (parseFloat(retEl.innerText.replace('-','')) + amt);
+        let current = parseFloat(balEl.innerText);
+        if(type === 'دخل') {
+            balEl.innerText = current + amt;
+            inEl.innerText = "+" + (parseFloat(inEl.innerText) + amt);
+        } else if(type === 'خرج') {
+            balEl.innerText = current - amt;
+            outEl.innerText = "-" + (Math.abs(parseFloat(outEl.innerText)) + amt);
+        } else if(type === 'RETOUR') {
+            balEl.innerText = current - amt;
+            retEl.innerText = "-" + (Math.abs(parseFloat(retEl.innerText)) + amt);
         }
-        balEl.innerText = val;
 
-        // الإرسال في الخلفية
         sendToServer(item, type, amt);
     }
 
@@ -140,18 +164,37 @@
             body: JSON.stringify({ item, type, amount, date })
         });
         document.getElementById('sync').style.display = 'none';
-        // لا نحتاج لإعادة التحديث بالكامل فوراً لضمان السرعة، سيتم التحديث في الخلفية
+        // تحديث البيانات في الخلفية بدون تعطيل المستخدم
+        const r = await fetch(URL);
+        DB = await r.json();
     }
 
-    function manualAdd(item) {
+    function quick(item, type, amt) { sendOptimistic(item, type, amt); }
+
+    function manual(item) {
         const amt = parseFloat(document.getElementById(`amt-${item}`).value);
-        if(isNaN(amt)) return alert("ادخل رقم");
-        // التعديل أو الكميات الكبيرة يفضل انتظار السيرفر فيها لضمان الدقة
-        sendToServer(item, 'Adjustment', amt).then(() => fetchData());
+        if(isNaN(amt)) return;
+        sendToServer(item, 'Adjustment', amt).then(()=>fetchData());
+        document.getElementById(`amt-${item}`).value = "";
+    }
+
+    function exportPDF(p) {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.text(`Report 513 - ${p}`, 105, 10, {align:'center'});
+        const filtered = DB.slice(1).filter(r => {
+            const diff = (new Date() - new Date(r[0])) / 86400000;
+            return p === 'week' ? diff <= 7 : diff <= 30;
+        });
+        doc.autoTable({
+            head: [['Date', 'Item', 'Type', 'Amt']],
+            body: filtered.map(r => [String(r[0]).split('T')[0], r[1], r[2], r[3]]),
+            startY: 20
+        });
+        doc.save(`Report_${p}.pdf`);
     }
 
     fetchData();
 </script>
 </body>
 </html>
-
