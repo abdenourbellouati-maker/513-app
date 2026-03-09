@@ -3,69 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>نظام 513 المحمول Pro</title>
+    <title>نظام 513 المحمول v6</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <style>
-        :root { 
-            --bg: #f2f2f7; --card: #ffffff; --txt: #1c1c1e; --p: #007aff; 
-            --s: #34c759; --d: #ff3b30; --w: #ff9500; --border: #d1d1d6;
-        }
-        [data-theme="dark"] {
-            --bg: #000000; --card: #1c1c1e; --txt: #ffffff; 
-            --border: #38383a; --p: #0a84ff;
-        }
-        
-        body { 
-            font-family: -apple-system, system-ui, sans-serif; 
-            background: var(--bg); color: var(--txt); 
-            margin: 0; padding: 0; transition: 0.3s;
-        }
-
-        .header { 
-            background: var(--card); border-bottom: 1px solid var(--border);
-            padding: 15px; position: sticky; top: 0; z-index: 100;
-        }
+        :root { --bg: #f2f2f7; --card: #ffffff; --txt: #1c1c1e; --p: #007aff; --s: #34c759; --d: #ff3b30; --w: #ff9500; --border: #d1d1d6; }
+        [data-theme="dark"] { --bg: #000; --card: #1c1c1e; --txt: #fff; --border: #38383a; --p: #0a84ff; }
+        body { font-family: sans-serif; background: var(--bg); color: var(--txt); margin: 0; padding: 0; transition: 0.3s; }
+        .header { background: var(--card); border-bottom: 1px solid var(--border); padding: 15px; position: sticky; top: 0; z-index: 100; }
         .top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .date-row { display: flex; gap: 8px; }
-        
-        input[type="date"] { 
-            flex: 1; border: none; background: var(--bg); color: var(--txt);
-            padding: 12px; border-radius: 12px; font-weight: bold; font-size: 1rem;
-        }
-
-        .icon-btn { 
-            background: var(--bg); border: none; border-radius: 12px; 
-            padding: 10px; cursor: pointer; color: var(--txt); font-size: 1.2rem;
-        }
-
+        input[type="date"] { flex: 1; border: none; background: var(--bg); color: var(--txt); padding: 12px; border-radius: 12px; font-weight: bold; width: 100%; }
+        .icon-btn { background: var(--bg); border: none; border-radius: 12px; padding: 10px; cursor: pointer; color: var(--txt); }
         .grid { padding: 10px; }
-        .card { 
-            background: var(--card); border-radius: 20px; padding: 18px; 
-            margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
+        .card { background: var(--card); border-radius: 20px; padding: 18px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         .card-h { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .bal-badge { background: var(--p); color: white; padding: 5px 12px; border-radius: 10px; font-weight: bold; font-size: 1.1rem; }
-
+        .bal-badge { background: var(--p); color: white; padding: 5px 12px; border-radius: 10px; font-weight: bold; }
         .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 15px; }
         .s-box { background: var(--bg); padding: 8px 2px; border-radius: 10px; text-align: center; }
         .s-lbl { font-size: 0.6rem; opacity: 0.6; display: block; }
-        .s-val { font-size: 0.9rem; font-weight: bold; }
-
+        .s-val { font-size: 0.85rem; font-weight: bold; }
         .btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-        .btn { 
-            border: none; padding: 12px; border-radius: 12px; color: white; 
-            font-weight: bold; font-size: 0.9rem; cursor: pointer;
-        }
+        .btn { border: none; padding: 12px; border-radius: 12px; color: white; font-weight: bold; cursor: pointer; }
         .b-in { background: var(--s); } .b-out { background: var(--d); } .b-ret { background: var(--w); }
-
         .manual { display: flex; gap: 8px; margin-top: 15px; border-top: 1px solid var(--border); padding-top: 15px; }
         .manual input { flex: 1; background: var(--bg); border: none; padding: 10px; border-radius: 10px; color: var(--txt); text-align: center; }
-        
-        .footer { padding: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .footer { padding: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: var(--card); }
         .rep-btn { padding: 15px; border-radius: 12px; border: none; background: #444; color: white; font-weight: bold; }
-
-        #sync { position: fixed; top: 10px; left: 50%; transform: translateX(-50%); background: var(--p); color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; display: none; z-index: 1001; }
+        #sync { position: fixed; top: 10px; left: 50%; transform: translateX(-50%); background: var(--p); color: white; padding: 5px 15px; border-radius: 20px; display: none; z-index: 1001; }
     </style>
 </head>
 <body data-theme="light">
@@ -80,32 +44,28 @@
             <button class="icon-btn" onclick="fetchData()">🔄</button>
         </div>
     </div>
-    <div class="date-row">
-        <input type="date" id="mDate" onchange="fetchData()">
-    </div>
+    <input type="date" id="mDate" onchange="fetchData()">
 </header>
 
 <div class="grid" id="grid"></div>
 
 <div class="footer">
-    <button class="rep-btn" onclick="exportPDF('week')">📊 تقرير أسبوعي</button>
-    <button class="rep-btn" onclick="exportPDF('month')">📅 تقرير شهري</button>
+    <button class="rep-btn" onclick="exportPDF('week')">📊 Weekly Report</button>
+    <button class="rep-btn" onclick="exportPDF('month')">📅 Monthly Report</button>
 </div>
 
 <script>
-    // الرابط الخاص بك
-    const URL = "https://script.google.com/macros/s/AKfycbzlNw95iTW4K7lrHAGWr_sSS6mELbVaxNqc0ly9B_Kj9zjbO4myFZ_MaJFFmbKfTHLH/exec";
+    // --- ضـع رابط الـ URL الخـاص بـك هنـا ---
+    const URL = "https://script.google.com/macros/s/AKfycbysj12r3aJNeW7arYuxvMcrlgRpWr6FAxB-EDT4sJSx5cPRU1ETf3iJXJtX_aypi4EK/exec";
+    
     const ITEMS = ["CH30", "LR", "PR", "CP", "EDAHABIA", "CODE"];
     let DB = [];
 
-    // إدارة الوضع الليلي والذاكرة
     function toggleTheme() {
-        const current = document.body.getAttribute('data-theme');
-        const next = current === 'dark' ? 'light' : 'dark';
+        const next = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
         document.body.setAttribute('data-theme', next);
         localStorage.setItem('theme', next);
     }
-    // استعادة الوضع الليلي عند الفتح
     if(localStorage.getItem('theme') === 'dark') document.body.setAttribute('data-theme', 'dark');
 
     document.getElementById('mDate').valueAsDate = new Date();
@@ -124,7 +84,6 @@
         const grid = document.getElementById('grid');
         const selD = document.getElementById('mDate').value;
         grid.innerHTML = "";
-
         const logs = DB.slice(1).sort((a,b) => String(a[0]).localeCompare(String(b[0])));
 
         ITEMS.forEach(item => {
@@ -138,54 +97,42 @@
                     else if(l[2]==='خرج'||l[2]==='RETOUR') s.prev-=amt; 
                     else if(l[2]==='Adjustment') s.prev=amt;
                 } else if(d === selD) {
-                    if(l[2]==='دخل') s.in+=amt; 
-                    else if(l[2]==='خرج') s.out+=amt; 
-                    else if(l[2]==='RETOUR') s.ret+=amt; 
-                    else if(l[2]==='Adjustment') {s.prev=amt; s.in=0; s.out=0; s.ret=0;}
+                    if(l[2]==='دخل') s.in+=amt; else if(l[2]==='خرج') s.out+=amt; else if(l[2]==='RETOUR') s.ret+=amt; 
+                    else if(l[2]==='Adjustment') { s.prev=amt; s.in=0; s.out=0; s.ret=0; }
                 }
             });
-
             const bal = (s.prev + s.in) - (s.out + s.ret);
-
             grid.innerHTML += `
                 <div class="card">
-                    <div class="card-h">
-                        <span style="font-weight:bold; font-size:1.2rem;">${item}</span>
-                        <span class="bal-badge" id="bal-${item}">${bal}</span>
-                    </div>
+                    <div class="card-h"><b>${item}</b> <span class="bal-badge" id="bal-${item}">${bal}</span></div>
                     <div class="stats">
-                        <div class="s-box"><span class="s-lbl">سابق</span><span class="s-val">${s.prev}</span></div>
-                        <div class="s-box" style="color:var(--s)"><span class="s-lbl">دخل</span><span class="s-val" id="in-${item}">+${s.in}</span></div>
-                        <div class="s-box" style="color:var(--d)"><span class="s-lbl">خرج</span><span class="s-val" id="out-${item}">-${s.out}</span></div>
-                        <div class="s-box" style="color:var(--w)"><span class="s-lbl">مرجع</span><span class="s-val" id="ret-${item}">-${s.ret}</span></div>
+                        <div class="s-box"><span class="s-lbl">PREV</span><span class="s-val">${s.prev}</span></div>
+                        <div class="s-box" style="color:var(--s)"><span class="s-lbl">IN</span><span class="s-val" id="in-${item}">+${s.in}</span></div>
+                        <div class="s-box" style="color:var(--d)"><span class="s-lbl">OUT</span><span class="s-val" id="out-${item}">-${s.out}</span></div>
+                        <div class="s-box" style="color:var(--w)"><span class="s-lbl">RET</span><span class="s-val" id="ret-${item}">-${s.ret}</span></div>
                     </div>
                     <div class="btns">
-                        <button class="btn b-in" onclick="quick('${item}','دخل',1)">+1 دخل</button>
-                        <button class="btn b-out" onclick="quick('${item}','خرج',1)">-1 خرج</button>
-                        <button class="btn b-ret" onclick="quick('${item}','RETOUR',1)">مرجع</button>
+                        <button class="btn b-in" onclick="quick('${item}','دخل',1)">+1</button>
+                        <button class="btn b-out" onclick="quick('${item}','خرج',1)">-1</button>
+                        <button class="btn b-ret" onclick="quick('${item}','RETOUR',1)">RET</button>
                     </div>
                     <div class="manual">
-                        <input type="number" id="amt-${item}" placeholder="كمية مخصصة">
-                        <button onclick="manual('${item}')" style="background:var(--p); color:white; border:none; padding:10px 15px; border-radius:10px; font-weight:bold;">حفظ</button>
+                        <input type="number" id="amt-${item}" placeholder="Qty">
+                        <button onclick="manual('${item}')" style="background:var(--p); color:white; border:none; padding:10px; border-radius:10px;">Save</button>
                     </div>
                 </div>`;
         });
     }
 
     async function quick(item, type, amt) {
-        // تحديث فوري للشاشة (Speed)
         const balEl = document.getElementById(`bal-${item}`);
-        let current = parseFloat(balEl.innerText);
-        balEl.innerText = (type === 'دخل') ? current + amt : current - amt;
-
+        let cur = parseFloat(balEl.innerText);
+        balEl.innerText = (type === 'دخل') ? cur + amt : cur - amt;
         const date = document.getElementById('mDate').value;
         document.getElementById('sync').style.display = 'block';
-        await fetch(URL, {
-            method: "POST",
-            body: JSON.stringify({ item, type, amount: amt, date })
-        });
+        await fetch(URL, { method: "POST", body: JSON.stringify({ item, type, amount: amt, date }) });
         document.getElementById('sync').style.display = 'none';
-        fetchData(); // تحديث الخلفية للتأكد
+        fetchData();
     }
 
     function manual(item) {
@@ -194,39 +141,42 @@
         document.getElementById(`amt-${item}`).value = "";
     }
 
-    // إصلاح التقارير وتنسيقها
     function exportPDF(period) {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        
-        // إعدادات الخط والعناوين
-        doc.setFontSize(18);
-        doc.text(`Report 513 - ${period === 'week' ? 'Weekly' : 'Monthly'}`, 105, 15, { align: 'center' });
+        doc.setFontSize(16);
+        doc.text(`System 513 - ${period.toUpperCase()} SUMMARY`, 105, 15, { align: 'center' });
         
         const now = new Date();
-        const filtered = DB.slice(1).filter(r => {
-            const rowDate = new Date(r[0]);
-            const diffDays = (now - rowDate) / (1000 * 60 * 60 * 24);
-            return period === 'week' ? diffDays <= 7 : diffDays <= 30;
-        }).sort((a, b) => new Date(a[0]) - new Date(b[0])); // ترتيب تصاعدي حسب التاريخ
+        const summary = {};
+        ITEMS.forEach(it => summary[it] = { in: 0, out: 0, ret: 0, final: 0 });
 
-        const body = filtered.map(r => [
-            String(r[0]).split('T')[0], // التاريخ
-            r[1], // العنصر
-            r[2], // النوع
-            r[3]  // الكمية
-        ]);
+        DB.slice(1).forEach(l => {
+            const it = l[1]; if(!summary[it]) return;
+            const diff = (now - new Date(l[0])) / 86400000;
+            if (period === 'week' ? diff <= 7 : diff <= 30) {
+                const a = parseFloat(l[3]);
+                if(l[2]==='دخل') summary[it].in+=a;
+                else if(l[2]==='خرج') summary[it].out+=a;
+                else if(l[2]==='RETOUR') summary[it].ret+=a;
+                else if(l[2]==='Adjustment') summary[it].final=a;
+            }
+        });
+
+        const rows = ITEMS.map(it => {
+            const r = summary[it];
+            const bal = (r.in - r.out - r.ret); // تبسيط للمجموع
+            return [it, r.in, r.out, r.ret, "Check App"];
+        });
 
         doc.autoTable({
             startY: 25,
-            head: [['Date', 'Item', 'Type', 'Amount']],
-            body: body,
-            theme: 'grid',
-            headStyles: { fillGray: 200, textColor: 0, fontStyle: 'bold' },
-            styles: { fontSize: 10, halign: 'center' }
+            head: [['Item', 'Total IN', 'Total OUT', 'Returns', 'Note']],
+            body: rows,
+            theme: 'striped',
+            headStyles: { fillStyle: [0, 122, 255] }
         });
-
-        doc.save(`513_Report_${period}.pdf`);
+        doc.save(`513_${period}_report.pdf`);
     }
 
     fetchData();
