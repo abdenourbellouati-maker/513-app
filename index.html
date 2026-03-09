@@ -3,151 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام 513 الاحترافي</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    <title>نظام 513 المحاسبي - التسلسل الدقيق</title>
     <style>
-        :root { --bg: #f4f6f9; --card: #ffffff; --primary: #007bff; --success: #28a745; --danger: #dc3545; --warning: #ffc107; --text: #333; }
-        [data-theme="dark"] { --bg: #1a1a1a; --card: #2d2d2d; --text: #eee; }
-        body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 20px; }
-        .header { background: var(--primary); color: white; padding: 15px; text-align: center; font-weight: bold; font-size: 1.2rem; display: flex; justify-content: space-between; align-items: center; }
-        .date-section { background: var(--card); padding: 15px; margin: 10px; border-radius: 12px; display: flex; gap: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        :root { --primary: #007bff; --bg: #f4f7f6; --card: #ffffff; --text: #333; --success: #28a745; --danger: #dc3545; --warning: #ffc107; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; }
+        .app-header { background: var(--primary); color: white; padding: 15px; text-align: center; border-radius: 0 0 15px 15px; font-weight: bold; }
+        .date-container { background: white; padding: 15px; border-radius: 12px; margin: 15px 0; display: flex; gap: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         input[type="date"] { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; }
         
-        .container { padding: 10px; max-width: 600px; margin: auto; }
-        .item-card { background: var(--card); border-radius: 15px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .item-title { display: flex; justify-content: space-between; font-weight: bold; font-size: 1.3rem; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
-        .final-bal { background: #333; color: #fff; padding: 2px 12px; border-radius: 15px; font-size: 1rem; }
+        .item-card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-right: 5px solid var(--primary); }
+        .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .balance-box { background: #333; color: white; padding: 5px 15px; border-radius: 20px; font-weight: bold; }
 
-        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 15px; text-align: center; }
-        .stat-box { background: #f8f9fa; padding: 8px 2px; border-radius: 8px; border: 1px solid #eee; color: #333; }
-        .stat-label { font-size: 0.7rem; color: #666; display: block; }
-        .stat-val { font-weight: bold; font-size: 1rem; }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 15px; }
+        .stat-box { background: #f8f9fa; padding: 10px 2px; border-radius: 8px; text-align: center; border: 1px solid #eee; }
+        .stat-label { font-size: 0.7rem; color: #666; display: block; margin-bottom: 3px; }
+        .stat-val { font-weight: bold; font-size: 1.1rem; }
 
-        .actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-        .btn { border: none; padding: 12px; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; transition: 0.1s; }
-        .btn:active { transform: scale(0.95); }
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        .btn { border: none; padding: 12px; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; }
         .btn-in { background: var(--success); }
         .btn-out { background: var(--danger); }
         .btn-ret { background: var(--warning); color: #000; }
         
-        .adj-section { margin-top: 10px; padding-top: 10px; border-top: 1px dashed #ccc; display: flex; gap: 5px; align-items: center; }
-        .adj-input { width: 80px; padding: 5px; border-radius: 5px; border: 1px solid #ccc; }
+        .adj-area { margin-top: 15px; padding-top: 10px; border-top: 1px dashed #ccc; display: flex; gap: 10px; align-items: center; }
+        .adj-input { width: 100px; padding: 8px; border-radius: 6px; border: 1px solid #ddd; }
         
-        #sync { position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); background: #000; color: #fff; padding: 5px 20px; border-radius: 20px; font-size: 0.8rem; display: none; }
+        #loader { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: white; padding: 10px 20px; border-radius: 20px; display: none; }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <div>تطبيق 513 الاحترافي</div>
-    <div onclick="document.body.setAttribute('data-theme', document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark')">🌓</div>
+<div class="app-header">نظام 513 - التسلسل المحاسبي</div>
+
+<div class="date-container">
+    <input type="date" id="currentDate" onchange="loadData()">
+    <button onclick="loadData()" style="background:none; border:none; font-size:1.2rem;">🔄</button>
 </div>
 
-<div class="date-section">
-    <input type="date" id="targetDate" onchange="loadData()">
-    <button onclick="loadData()">🔄</button>
-</div>
-
-<div class="container" id="mainGrid"></div>
-
-<div id="sync">جاري التزامن...</div>
+<div id="grid"></div>
+<div id="loader">جاري التحديث...</div>
 
 <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbyaNujQ7MVEe5fHUEr6iK1hoObeREbAcF-wez-n__szb8wO-Q2eO4UheOwcW36NqNms/exec";
     const ITEMS = ["CH30", "LR", "PR", "CP", "EDAHABIA", "CODE"];
-    let RAW_DATA = [];
+    let LOGS = [];
 
-    document.getElementById('targetDate').valueAsDate = new Date();
+    document.getElementById('currentDate').valueAsDate = new Date();
 
     async function loadData() {
-        document.getElementById('sync').style.display = 'block';
+        document.getElementById('loader').style.display = 'block';
         const res = await fetch(API_URL);
-        RAW_DATA = await res.json();
+        LOGS = await res.json();
         render();
-        document.getElementById('sync').style.display = 'none';
+        document.getElementById('loader').style.display = 'none';
     }
 
     function render() {
-        const grid = document.getElementById('mainGrid');
-        const selectedDate = new Date(document.getElementById('targetDate').value);
+        const grid = document.getElementById('grid');
+        const selectedDate = new Date(document.getElementById('currentDate').value);
         selectedDate.setHours(0,0,0,0);
         
         grid.innerHTML = "";
 
         ITEMS.forEach(item => {
-            let stats = { prev: 0, in: 0, out: 0, ret: 0 };
+            let stats = { previous: 0, in: 0, out: 0, ret: 0 };
             
-            // ترتيب البيانات لضمان التراكم الصحيح
-            const sorted = RAW_DATA.slice(1).sort((a,b) => new Date(a[0]) - new Date(b[0]));
+            // ترتيب البيانات زمنياً
+            const sorted = LOGS.slice(1).sort((a,b) => new Date(a[0]) - new Date(b[0]));
 
             sorted.forEach(row => {
                 const rowDate = new Date(row[0]);
                 rowDate.setHours(0,0,0,0);
-                const amt = parseFloat(row[3]) || 0;
                 if(row[1] !== item) return;
 
+                const type = row[2];
+                const amt = parseFloat(row[3]) || 0;
+
                 if(rowDate < selectedDate) {
-                    // وراثة الرصيد: كل شيء قبل اليوم المختار
-                    if(row[2] === "دخل" || row[2] === "Initial") stats.prev += amt;
-                    else if(row[2] === "خرج" || row[2] === "RETOUR") stats.prev -= amt;
-                    else if(row[2] === "Adjustment") stats.prev = amt; // التعديل يصفر ما قبله
+                    // بناء الرصيد التراكمي السابق (وراثة الأيام الماضية)
+                    if(type === "دخل" || type === "Initial") stats.previous += amt;
+                    else if(type === "خرج" || type === "RETOUR") stats.previous -= amt;
+                    else if(type === "Adjustment") stats.previous = amt; 
                 } 
                 else if(rowDate.getTime() === selectedDate.getTime()) {
                     // حركات اليوم المختار حصراً
-                    if(row[2] === "دخل") stats.in += amt;
-                    else if(row[2] === "خرج") stats.out += amt;
-                    else if(row[2] === "RETOUR") stats.ret += amt;
-                    else if(row[2] === "Adjustment") {
-                        // تعديل اليوم يحدد "السابق" ويصفر حركات اليوم
-                        stats.prev = amt; stats.in = 0; stats.out = 0; stats.ret = 0;
+                    if(type === "دخل") stats.in += amt;
+                    else if(type === "خرج") stats.out += amt;
+                    else if(type === "RETOUR") stats.ret += amt;
+                    else if(type === "Adjustment") {
+                        // إذا تم التعديل اليوم، يُلغى كل ما سبقه ويصبح هذا الرقم هو نقطة البداية
+                        stats.previous = amt; stats.in = 0; stats.out = 0; stats.ret = 0;
                     }
                 }
             });
 
-            const currentBalance = (stats.prev + stats.in) - (stats.out + stats.ret);
+            const finalBalance = (stats.previous + stats.in) - (stats.out + stats.ret);
 
             grid.innerHTML += `
                 <div class="item-card">
-                    <div class="item-title">${item} <span class="final-bal">${currentBalance}</span></div>
+                    <div class="card-top">
+                        <span style="font-weight:bold; font-size:1.2rem;">${item}</span>
+                        <div class="balance-box">الرصيد النهائي: ${finalBalance}</div>
+                    </div>
                     <div class="stats-grid">
-                        <div class="stat-box"><span class="stat-label">سابق</span><span class="stat-val">${stats.prev}</span></div>
-                        <div class="stat-box" style="color:green"><span class="stat-label">دخل</span><span class="stat-val">${stats.in}</span></div>
-                        <div class="stat-box" style="color:red"><span class="stat-label">خرج</span><span class="stat-val">${stats.out}</span></div>
+                        <div class="stat-box"><span class="stat-label">سابق</span><span class="stat-val">${stats.previous}</span></div>
+                        <div class="stat-box" style="color:green"><span class="stat-label">دخل اليوم</span><span class="stat-val">${stats.in}</span></div>
+                        <div class="stat-box" style="color:red"><span class="stat-label">خرج اليوم</span><span class="stat-val">${stats.out}</span></div>
                         <div class="stat-box" style="color:orange"><span class="stat-label">مرجع</span><span class="stat-val">${stats.ret}</span></div>
                     </div>
-                    <div class="actions">
-                        <button class="btn btn-in" onclick="push('${item}','دخل',1)">+1</button>
-                        <button class="btn btn-out" onclick="push('${item}','خرج',1)">-1</button>
-                        <button class="btn btn-ret" onclick="push('${item}','RETOUR',1)">R</button>
+                    <div class="btn-group">
+                        <button class="btn btn-in" onclick="post('${item}','دخل',1)">+1</button>
+                        <button class="btn btn-out" onclick="post('${item}','خرج',1)">-1</button>
+                        <button class="btn btn-ret" onclick="post('${item}','RETOUR',1)">R</button>
                     </div>
-                    <div class="adj-section">
-                        <span>الرصيد الفعلي (جرد):</span>
-                        <input type="number" id="adj-${item}" class="adj-input" placeholder="0">
-                        <button onclick="applyAdj('${item}')" style="background:#666; color:white; border:none; border-radius:4px; padding:5px 10px;">حفظ</button>
+                    <div class="adj-area">
+                        <span style="font-size:0.8rem;">تعديل الرصيد (جرد):</span>
+                        <input type="number" id="inp-${item}" class="adj-input" placeholder="0">
+                        <button onclick="applyAdj('${item}')" style="background:#666; color:white; border:none; padding:8px 15px; border-radius:5px;">حفظ</button>
                     </div>
                 </div>`;
         });
     }
 
-    async function push(item, type, amount) {
-        const date = document.getElementById('targetDate').value;
-        // تحديث محلي فوري
-        RAW_DATA.push([new Date(date), item, type, amount]);
+    async function post(item, type, amount) {
+        const date = document.getElementById('currentDate').value;
+        // تحديث مرئي فوري
+        LOGS.push([new Date(date), item, type, amount]);
         render();
 
-        document.getElementById('sync').style.display = 'block';
+        document.getElementById('loader').style.display = 'block';
         await fetch(API_URL, {
             method: "POST",
             body: JSON.stringify({ item, type, amount, date })
         });
-        document.getElementById('sync').style.display = 'none';
+        document.getElementById('loader').style.display = 'none';
+        loadData(); // إعادة الجلب للتأكد من المزامنة
     }
 
     function applyAdj(item) {
-        const val = document.getElementById(`adj-${item}`).value;
+        const val = document.getElementById(`inp-${item}`).value;
         if(val === "") return;
-        push(item, 'Adjustment', parseFloat(val));
+        post(item, 'Adjustment', parseFloat(val));
     }
 
     loadData();
