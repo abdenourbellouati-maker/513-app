@@ -3,49 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>نظام 513 الاحترافي</title>
+    <title>نظام 513 الاحترافي v7</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <style>
         :root { --bg: #f2f2f7; --card: #ffffff; --txt: #1c1c1e; --p: #007aff; --s: #34c759; --d: #ff3b30; --w: #ff9500; --border: #d1d1d6; }
         [data-theme="dark"] { --bg: #000; --card: #1c1c1e; --txt: #fff; --border: #38383a; --p: #0a84ff; }
-        
-        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--txt); margin: 0; padding: 0; transition: background 0.3s; overflow-x: hidden; }
-        
-        /* الهيدر العصري */
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--txt); margin: 0; padding: 0; transition: 0.3s; overflow-x: hidden; }
         .header { background: var(--card); border-bottom: 1px solid var(--border); padding: 15px; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px); }
         .top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        
-        /* زر الوضع الليلي العصري */
-        .theme-toggle { width: 45px; height: 45px; border-radius: 12px; border: none; background: var(--bg); color: var(--txt); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; transition: 0.2s; }
-        .theme-toggle:active { transform: scale(0.9); }
-
-        input[type="date"] { border: 1px solid var(--border); background: var(--bg); color: var(--txt); padding: 12px; border-radius: 14px; font-weight: 600; width: 100%; box-sizing: border-box; font-size: 1rem; }
-
+        .theme-toggle { width: 45px; height: 45px; border-radius: 12px; border: none; background: var(--bg); color: var(--txt); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
+        input[type="date"] { border: 1px solid var(--border); background: var(--bg); color: var(--txt); padding: 12px; border-radius: 14px; width: 100%; box-sizing: border-box; font-size: 1rem; }
         .grid { padding: 12px; }
         .card { background: var(--card); border-radius: 24px; padding: 20px; margin-bottom: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.05); border: 1px solid var(--border); }
         .card-h { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
-        .item-title { font-size: 1.3rem; font-weight: 800; letter-spacing: -0.5px; }
+        .item-title { font-size: 1.3rem; font-weight: 800; }
         .bal-badge { background: var(--p); color: white; padding: 6px 16px; border-radius: 14px; font-weight: 800; font-size: 1.1rem; }
-
         .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 18px; }
         .s-box { background: var(--bg); padding: 10px 2px; border-radius: 12px; text-align: center; }
-        .s-lbl { font-size: 0.6rem; opacity: 0.5; display: block; margin-bottom: 2px; }
+        .s-lbl { font-size: 0.6rem; opacity: 0.5; display: block; }
         .s-val { font-size: 0.9rem; font-weight: 700; }
-
         .btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-        .btn { border: none; padding: 16px; border-radius: 16px; color: white; font-weight: 700; cursor: pointer; font-size: 1rem; transition: 0.1s; }
-        .btn:active { transform: scale(0.96); opacity: 0.8; }
+        .btn { border: none; padding: 16px; border-radius: 16px; color: white; font-weight: 700; cursor: pointer; }
         .b-in { background: var(--s); } .b-out { background: var(--d); } .b-ret { background: var(--w); }
-
         .manual { display: flex; gap: 8px; margin-top: 18px; border-top: 1px solid var(--border); padding-top: 18px; }
-        .manual input { flex: 1; background: var(--bg); border: 1px solid var(--border); padding: 12px; border-radius: 12px; color: var(--txt); text-align: center; font-size: 1rem; }
+        .manual input { flex: 1; background: var(--bg); border: 1px solid var(--border); padding: 12px; border-radius: 12px; color: var(--txt); text-align: center; }
         .b-save { background: var(--txt); color: var(--card); border: none; padding: 0 20px; border-radius: 12px; font-weight: 700; }
-
         .footer { padding: 15px 15px 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .rep-btn { padding: 18px; border-radius: 18px; border: none; background: #2c2c2e; color: white; font-weight: 700; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        
-        #sync-dot { width: 8px; height: 8px; background: var(--s); border-radius: 50%; display: none; margin-left: 8px; }
+        .rep-btn { padding: 18px; border-radius: 18px; border: none; background: #2c2c2e; color: white; font-weight: 700; font-size: 0.8rem; }
+        #sync-dot { width: 10px; height: 10px; background: var(--s); border-radius: 50%; display: none; margin-left: 8px; box-shadow: 0 0 10px var(--s); }
     </style>
 </head>
 <body data-theme="light">
@@ -54,7 +40,7 @@
     <div class="top-row">
         <div style="display:flex; align-items:center;">
             <div id="sync-dot"></div>
-            <span style="font-weight: 900; font-size: 1.4rem; letter-spacing: -1px;">DASHBOARD 513</span>
+            <span style="font-weight: 900; font-size: 1.4rem;">DASHBOARD 513</span>
         </div>
         <div style="display:flex; gap:8px;">
             <button class="theme-toggle" onclick="toggleTheme()" id="tBtn">☼</button>
@@ -67,21 +53,20 @@
 <div class="grid" id="grid"></div>
 
 <div class="footer">
-    <button class="rep-btn" onclick="exportPDF('week')">📄 Week Summary</button>
-    <button class="rep-btn" onclick="exportPDF('month')">📅 Month Summary</button>
+    <button class="rep-btn" onclick="exportPDF('week')">📄 Week (Sat-Thu)</button>
+    <button class="rep-btn" onclick="exportPDF('month')">📅 Full Month</button>
 </div>
 
 <script>
-    // الرابط الخاص بك (تأكد من أنه New Deployment)
+    // ⚠️ ضع رابط الـ URL الخاص بك هنا بين علامتي التنصيص
     const URL = "https://script.google.com/macros/s/AKfycbysj12r3aJNeW7arYuxvMcrlgRpWr6FAxB-EDT4sJSx5cPRU1ETf3iJXJtX_aypi4EK/exec";
+    
     const ITEMS = ["CH30", "LR", "PR", "CP", "EDAHABIA", "CODE"];
     let DB = [];
 
-    // إدارة الوضع الليلي المطور
     function toggleTheme() {
-        const b = document.body;
-        const next = b.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-        b.setAttribute('data-theme', next);
+        const next = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        document.body.setAttribute('data-theme', next);
         document.getElementById('tBtn').innerText = next === 'dark' ? '☾' : '☼';
         localStorage.setItem('theme', next);
     }
@@ -104,7 +89,6 @@
         const grid = document.getElementById('grid');
         const selD = document.getElementById('mDate').value;
         grid.innerHTML = "";
-        
         const logs = DB.slice(1).sort((a,b) => String(a[0]).localeCompare(String(b[0])));
 
         ITEMS.forEach(item => {
@@ -114,15 +98,12 @@
                 const d = String(l[0]).split('T')[0];
                 const amt = parseFloat(l[3]) || 0;
                 if(d < selD) {
-                    if(l[2]==='دخل') s.prev+=amt; 
-                    else if(l[2]==='خرج'||l[2]==='RETOUR') s.prev-=amt; 
-                    else if(l[2]==='Adjustment') s.prev=amt;
+                    if(l[2]==='دخل') s.prev+=amt; else if(l[2]==='خرج'||l[2]==='RETOUR') s.prev-=amt; else if(l[2]==='Adjustment') s.prev=amt;
                 } else if(d === selD) {
                     if(l[2]==='دخل') s.in+=amt; else if(l[2]==='خرج') s.out+=amt; else if(l[2]==='RETOUR') s.ret+=amt; 
                     else if(l[2]==='Adjustment') { s.prev=amt; s.in=0; s.out=0; s.ret=0; }
                 }
             });
-
             const bal = (s.prev + s.in) - (s.out + s.ret);
             grid.innerHTML += `
                 <div class="card">
@@ -139,34 +120,22 @@
                         <button class="btn b-ret" onclick="quick('${item}','RETOUR',1)">RET</button>
                     </div>
                     <div class="manual">
-                        <input type="number" id="amt-${item}" placeholder="0.00">
+                        <input type="number" id="amt-${item}" placeholder="Qty">
                         <button class="b-save" onclick="manual('${item}')">SAVE</button>
                     </div>
                 </div>`;
         });
     }
 
-    // المزامنة اللحظية الفائقة
     async function quick(item, type, amt) {
         const balEl = document.getElementById(`bal-${item}`);
         const dot = document.getElementById('sync-dot');
-        
-        // تعديل فوري في الواجهة (Zero Delay)
         let cur = parseFloat(balEl.innerText);
         balEl.innerText = (type === 'دخل') ? cur + amt : cur - amt;
-        dot.style.display = 'block'; // تنبيه المزامنة في الخلفية
-
+        dot.style.display = 'block';
         const date = document.getElementById('mDate').value;
-        
-        // إرسال البيانات دون تعطيل المستخدم
-        fetch(URL, { 
-            method: "POST", 
-            body: JSON.stringify({ item, type, amount: amt, date }) 
-        }).then(() => {
-            dot.style.display = 'none';
-            // تحديث البيانات فعلياً بعد الإرسال للتأكد من المزامنة
-            fetchData();
-        });
+        fetch(URL, { method: "POST", body: JSON.stringify({ item, type, amount: amt, date }) })
+        .then(() => { dot.style.display = 'none'; fetchData(); });
     }
 
     function manual(item) {
@@ -175,54 +144,58 @@
         document.getElementById(`amt-${item}`).value = "";
     }
 
-    // تقارير احترافية مع أرصدة افتتاحية ونهائية
     function exportPDF(period) {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        doc.setFontSize(20);
-        doc.text("INVENTORY SUMMARY REPORT", 105, 15, { align: 'center' });
-        
-        const now = new Date();
+        const selectedDate = new Date(document.getElementById('mDate').value);
+        let startDate, endDate, title;
+
+        if (period === 'week') {
+            const day = selectedDate.getDay(); 
+            const diff = (day + 1) % 7; 
+            startDate = new Date(selectedDate);
+            startDate.setDate(selectedDate.getDate() - diff);
+            endDate = new Date(startDate);
+            endDate.setDate(startDate.getDate() + 5);
+            title = `WEEKLY SUMMARY (SAT-THU)`;
+        } else {
+            startDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
+            endDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0);
+            title = `MONTHLY SUMMARY (${selectedDate.toLocaleString('default', { month: 'long' })})`;
+        }
+
+        doc.setFontSize(18);
+        doc.text(title, 105, 15, { align: 'center' });
+        doc.setFontSize(10);
+        doc.text(`Period: ${startDate.toISOString().split('T')[0]} to ${endDate.toISOString().split('T')[0]}`, 105, 22, { align: 'center' });
+
         const summary = {};
         ITEMS.forEach(it => summary[it] = { start: 0, in: 0, out: 0, ret: 0 });
 
-        const logs = DB.slice(1);
-        logs.forEach(l => {
+        DB.slice(1).forEach(l => {
             const it = l[1]; if(!summary[it]) return;
             const rowDate = new Date(l[0]);
-            const diff = (now - rowDate) / 86400000;
-            const isPeriod = (period === 'week' ? diff <= 7 : diff <= 30);
             const amt = parseFloat(l[3]);
-
-            if (diff > (period === 'week' ? 7 : 30)) {
-                // حساب الرصيد قبل بداية الفترة (الافتتاحي)
-                if(l[2]==='دخل') summary[it].start += amt;
-                else if(l[2]==='خرج'||l[2]==='RETOUR') summary[it].start -= amt;
-                else if(l[2]==='Adjustment') summary[it].start = amt;
-            } else {
-                // حركات الفترة
-                if(l[2]==='دخل') summary[it].in += amt;
-                else if(l[2]==='خرج') summary[it].out += amt;
-                else if(l[2]==='RETOUR') summary[it].ret += amt;
-                else if(l[2]==='Adjustment') { summary[it].start = amt; summary[it].in=0; summary[it].out=0; summary[it].ret=0; }
+            if (rowDate < startDate) {
+                if(l[2]==='دخل') summary[it].start+=amt; else if(l[2]==='خرج'||l[2]==='RETOUR') summary[it].start-=amt; else if(l[2]==='Adjustment') summary[it].start=amt;
+            } else if (rowDate >= startDate && rowDate <= endDate) {
+                if(l[2]==='دخل') summary[it].in+=amt; else if(l[2]==='خرج') summary[it].out+=amt; else if(l[2]==='RETOUR') summary[it].ret+=amt; 
+                else if(l[2]==='Adjustment') { summary[it].start=amt; summary[it].in=0; summary[it].out=0; summary[it].ret=0; }
             }
         });
 
         const rows = ITEMS.map(it => {
             const r = summary[it];
-            const closing = (r.start + r.in) - (r.out + r.ret);
-            return [it, r.start, r.in, r.out, r.ret, closing];
+            return [it, r.start, r.in, r.out, r.ret, (r.start + r.in - r.out - r.ret)];
         });
 
         doc.autoTable({
-            startY: 25,
+            startY: 30,
             head: [['Item', 'Opening', 'In (+)', 'Out (-)', 'Ret (-)', 'Closing']],
             body: rows,
             theme: 'grid',
-            headStyles: { fillStyle: [0, 122, 255], halign: 'center' },
-            styles: { halign: 'center', fontStyle: 'bold' }
+            headStyles: { fillStyle: [0, 122, 255], halign: 'center' }
         });
-
         doc.save(`Report_513_${period}.pdf`);
     }
 
