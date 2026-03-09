@@ -3,34 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>نظام 513 الاحترافي v7</title>
+    <title>نظام 513 الاحترافي v8</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <style>
         :root { --bg: #f2f2f7; --card: #ffffff; --txt: #1c1c1e; --p: #007aff; --s: #34c759; --d: #ff3b30; --w: #ff9500; --border: #d1d1d6; }
         [data-theme="dark"] { --bg: #000; --card: #1c1c1e; --txt: #fff; --border: #38383a; --p: #0a84ff; }
+        
         body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--txt); margin: 0; padding: 0; transition: 0.3s; overflow-x: hidden; }
+        
         .header { background: var(--card); border-bottom: 1px solid var(--border); padding: 15px; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px); }
         .top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .theme-toggle { width: 45px; height: 45px; border-radius: 12px; border: none; background: var(--bg); color: var(--txt); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
-        input[type="date"] { border: 1px solid var(--border); background: var(--bg); color: var(--txt); padding: 12px; border-radius: 14px; width: 100%; box-sizing: border-box; font-size: 1rem; }
+        
+        .theme-toggle { width: 45px; height: 45px; border-radius: 12px; border: none; background: var(--bg); color: var(--txt); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; transition: 0.2s; }
+        
+        input[type="date"] { border: 1px solid var(--border); background: var(--bg); color: var(--txt); padding: 12px; border-radius: 14px; font-weight: 600; width: 100%; box-sizing: border-box; font-size: 1rem; }
+
         .grid { padding: 12px; }
         .card { background: var(--card); border-radius: 24px; padding: 20px; margin-bottom: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.05); border: 1px solid var(--border); }
         .card-h { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
         .item-title { font-size: 1.3rem; font-weight: 800; }
         .bal-badge { background: var(--p); color: white; padding: 6px 16px; border-radius: 14px; font-weight: 800; font-size: 1.1rem; }
+
         .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 18px; }
         .s-box { background: var(--bg); padding: 10px 2px; border-radius: 12px; text-align: center; }
         .s-lbl { font-size: 0.6rem; opacity: 0.5; display: block; }
         .s-val { font-size: 0.9rem; font-weight: 700; }
+
         .btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-        .btn { border: none; padding: 16px; border-radius: 16px; color: white; font-weight: 700; cursor: pointer; }
+        .btn { border: none; padding: 16px; border-radius: 16px; color: white; font-weight: 700; cursor: pointer; font-size: 1rem; transition: 0.1s; }
+        .btn:active { transform: scale(0.96); opacity: 0.8; }
         .b-in { background: var(--s); } .b-out { background: var(--d); } .b-ret { background: var(--w); }
+
         .manual { display: flex; gap: 8px; margin-top: 18px; border-top: 1px solid var(--border); padding-top: 18px; }
-        .manual input { flex: 1; background: var(--bg); border: 1px solid var(--border); padding: 12px; border-radius: 12px; color: var(--txt); text-align: center; }
+        .manual input { flex: 1; background: var(--bg); border: 1px solid var(--border); padding: 12px; border-radius: 12px; color: var(--txt); text-align: center; font-size: 1rem; }
         .b-save { background: var(--txt); color: var(--card); border: none; padding: 0 20px; border-radius: 12px; font-weight: 700; }
-        .footer { padding: 15px 15px 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .rep-btn { padding: 18px; border-radius: 18px; border: none; background: #2c2c2e; color: white; font-weight: 700; font-size: 0.8rem; }
+
+        .footer { padding: 15px 15px 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: var(--card); border-top: 1px solid var(--border); }
+        .rep-btn { padding: 18px; border-radius: 18px; border: none; background: #2c2c2e; color: white; font-weight: 700; font-size: 0.85rem; }
+        
         #sync-dot { width: 10px; height: 10px; background: var(--s); border-radius: 50%; display: none; margin-left: 8px; box-shadow: 0 0 10px var(--s); }
     </style>
 </head>
@@ -40,7 +51,7 @@
     <div class="top-row">
         <div style="display:flex; align-items:center;">
             <div id="sync-dot"></div>
-            <span style="font-weight: 900; font-size: 1.4rem;">DASHBOARD 513</span>
+            <span style="font-weight: 900; font-size: 1.4rem; letter-spacing: -1px;">DASHBOARD 513</span>
         </div>
         <div style="display:flex; gap:8px;">
             <button class="theme-toggle" onclick="toggleTheme()" id="tBtn">☼</button>
@@ -58,15 +69,17 @@
 </div>
 
 <script>
-    // ⚠️ ضع رابط الـ URL الخاص بك هنا بين علامتي التنصيص
+    // ⚠️ استبدل الرابط التالي برابط الـ API الخاص بك من Google Apps Script
     const URL = "https://script.google.com/macros/s/AKfycbysj12r3aJNeW7arYuxvMcrlgRpWr6FAxB-EDT4sJSx5cPRU1ETf3iJXJtX_aypi4EK/exec";
     
     const ITEMS = ["CH30", "LR", "PR", "CP", "EDAHABIA", "CODE"];
     let DB = [];
 
+    // إدارة الوضع الليلي
     function toggleTheme() {
-        const next = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-        document.body.setAttribute('data-theme', next);
+        const b = document.body;
+        const next = b.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        b.setAttribute('data-theme', next);
         document.getElementById('tBtn').innerText = next === 'dark' ? '☾' : '☼';
         localStorage.setItem('theme', next);
     }
@@ -144,6 +157,7 @@
         document.getElementById(`amt-${item}`).value = "";
     }
 
+    // دالة التقارير الدقيقة (التي تمنع تداخل الأشهر)
     function exportPDF(period) {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
@@ -155,13 +169,16 @@
             const diff = (day + 1) % 7; 
             startDate = new Date(selectedDate);
             startDate.setDate(selectedDate.getDate() - diff);
+            startDate.setHours(0,0,0,0);
             endDate = new Date(startDate);
             endDate.setDate(startDate.getDate() + 5);
+            endDate.setHours(23,59,59,999);
             title = `WEEKLY SUMMARY (SAT-THU)`;
         } else {
-            startDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
-            endDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0);
-            title = `MONTHLY SUMMARY (${selectedDate.toLocaleString('default', { month: 'long' })})`;
+            // ضبط من اليوم 1 إلى اليوم الأخير من الشهر المختار حصراً
+            startDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1, 0, 0, 0);
+            endDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0, 23, 59, 59);
+            title = `MONTHLY SUMMARY (${selectedDate.toLocaleString('default', { month: 'long', year: 'numeric' })})`;
         }
 
         doc.setFontSize(18);
@@ -176,11 +193,16 @@
             const it = l[1]; if(!summary[it]) return;
             const rowDate = new Date(l[0]);
             const amt = parseFloat(l[3]);
+
             if (rowDate < startDate) {
-                if(l[2]==='دخل') summary[it].start+=amt; else if(l[2]==='خرج'||l[2]==='RETOUR') summary[it].start-=amt; else if(l[2]==='Adjustment') summary[it].start=amt;
+                if(l[2]==='دخل') summary[it].start += amt; 
+                else if(l[2]==='خرج'||l[2]==='RETOUR') summary[it].start -= amt; 
+                else if(l[2]==='Adjustment') summary[it].start = amt;
             } else if (rowDate >= startDate && rowDate <= endDate) {
-                if(l[2]==='دخل') summary[it].in+=amt; else if(l[2]==='خرج') summary[it].out+=amt; else if(l[2]==='RETOUR') summary[it].ret+=amt; 
-                else if(l[2]==='Adjustment') { summary[it].start=amt; summary[it].in=0; summary[it].out=0; summary[it].ret=0; }
+                if(l[2]==='دخل') summary[it].in += amt; 
+                else if(l[2]==='خرج') summary[it].out += amt; 
+                else if(l[2]==='RETOUR') summary[it].ret += amt; 
+                else if(l[2]==='Adjustment') { summary[it].start = amt; summary[it].in=0; summary[it].out=0; summary[it].ret=0; }
             }
         });
 
@@ -194,7 +216,8 @@
             head: [['Item', 'Opening', 'In (+)', 'Out (-)', 'Ret (-)', 'Closing']],
             body: rows,
             theme: 'grid',
-            headStyles: { fillStyle: [0, 122, 255], halign: 'center' }
+            headStyles: { fillStyle: [0, 122, 255], halign: 'center' },
+            styles: { halign: 'center', fontStyle: 'bold' }
         });
         doc.save(`Report_513_${period}.pdf`);
     }
