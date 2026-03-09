@@ -3,70 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام 513 الاحترافي V4</title>
+    <title>نظام 513 برو | Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <style>
-        :root { --p: #2563eb; --bg: #f8fafc; --c: #ffffff; --t: #1e293b; --s: #22c55e; --d: #ef4444; --w: #f59e0b; }
-        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--t); margin: 0; padding: 10px; }
-        .header { background: var(--p); color: white; padding: 15px; border-radius: 12px; text-align: center; font-weight: bold; margin-bottom: 15px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-        .date-bar { background: var(--c); padding: 12px; border-radius: 12px; display: flex; gap: 10px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        input[type="date"] { flex: 1; border: 1px solid #e2e8f0; padding: 8px; border-radius: 8px; font-size: 1rem; }
-        .card { background: var(--c); border-radius: 16px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border-top: 5px solid var(--p); }
-        .card-h { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .total { background: #1e293b; color: white; padding: 4px 12px; border-radius: 20px; font-weight: bold; }
-        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 15px; }
-        .s-box { background: #f1f5f9; padding: 8px 2px; border-radius: 8px; text-align: center; }
-        .s-lbl { font-size: 0.65rem; color: #64748b; display: block; }
-        .s-val { font-weight: bold; font-size: 1rem; }
-        .btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-        button { border: none; padding: 12px; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        button:active { transform: scale(0.95); }
-        .b-in { background: var(--s); } .b-out { background: var(--d); } .b-ret { background: var(--w); color: #000; }
-        .adj-row { margin-top: 15px; padding-top: 15px; border-top: 1px dashed #e2e8f0; display: flex; gap: 8px; align-items: center; }
-        .adj-in { width: 80px; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; }
-        #loading { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #000; color: #fff; padding: 10px 25px; border-radius: 50px; display: none; z-index: 1000; }
+        :root {
+            --bg: #f0f2f5; --card: #ffffff; --text: #1c1e21; --primary: #0062ff;
+            --success: #2ecc71; --danger: #e74c3c; --warning: #f1c40f; --accent: #8e44ad;
+        }
+        [data-theme="dark"] {
+            --bg: #18191a; --card: #242526; --text: #e4e6eb; --primary: #4589ff;
+        }
+        body { font-family: 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; transition: 0.4s; }
+        
+        /* الهيدر الاحترافي */
+        .app-header { background: var(--primary); color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; border-radius: 0 0 20px 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .time-section { text-align: left; }
+        #clock { font-size: 1.5rem; font-weight: bold; font-family: monospace; }
+        
+        /* شريط التحكم */
+        .control-bar { padding: 15px; display: flex; gap: 10px; align-items: center; overflow-x: auto; }
+        .date-picker { padding: 10px; border-radius: 12px; border: 1px solid #ddd; background: var(--card); color: var(--text); font-size: 1rem; flex: 1; }
+        .theme-toggle { background: var(--card); border: none; width: 45px; height: 45px; border-radius: 12px; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+
+        /* حاوية البطاقات */
+        .dashboard-grid { padding: 15px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .item-card { background: var(--card); border-radius: 20px; padding: 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.05); transition: 0.3s; position: relative; overflow: hidden; }
+        .item-card:hover { transform: translateY(-5px); }
+        .item-card::before { content: ''; position: absolute; top: 0; right: 0; width: 6px; height: 100%; background: var(--primary); }
+        
+        .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .card-head h2 { margin: 0; font-size: 1.4rem; color: var(--primary); }
+        .balance-badge { background: var(--text); color: var(--card); padding: 6px 15px; border-radius: 30px; font-weight: 800; font-size: 1.1rem; }
+
+        /* شبكة الإحصائيات */
+        .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 20px; }
+        .stat-item { background: rgba(128, 128, 128, 0.05); padding: 10px 5px; border-radius: 12px; text-align: center; }
+        .stat-label { font-size: 0.7rem; color: #888; display: block; margin-bottom: 5px; }
+        .stat-value { font-weight: bold; font-size: 1rem; }
+
+        /* الأزرار */
+        .action-btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        .btn { border: none; padding: 15px 5px; border-radius: 12px; color: white; font-weight: bold; cursor: pointer; font-size: 0.9rem; transition: 0.2s; display: flex; flex-direction: column; align-items: center; }
+        .btn:active { transform: scale(0.92); }
+        .btn-in { background: var(--success); }
+        .btn-out { background: var(--danger); }
+        .btn-ret { background: var(--warning); color: #000; }
+        
+        /* الجرد */
+        .adj-box { margin-top: 15px; background: rgba(0,0,0,0.02); padding: 10px; border-radius: 12px; display: flex; gap: 8px; align-items: center; }
+        .adj-box input { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #ddd; background: var(--bg); color: var(--text); }
+        .btn-save { background: var(--accent); color: white; padding: 8px 15px; border-radius: 8px; border: none; font-size: 0.8rem; cursor: pointer; }
+
+        /* قسم التقارير */
+        .reports-section { padding: 15px; display: flex; gap: 10px; }
+        .btn-report { flex: 1; padding: 15px; border-radius: 15px; border: none; background: #34495e; color: white; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+
+        #syncing { position: fixed; bottom: 20px; right: 20px; background: var(--primary); color: white; padding: 10px 20px; border-radius: 30px; font-size: 0.8rem; display: none; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
     </style>
 </head>
-<body>
+<body data-theme="light">
 
-<div class="header">نظام 513 المحاسبي المتسلسل</div>
+<div id="syncing">مزامنة البيانات...</div>
 
-<div class="date-bar">
-    <input type="date" id="mDate" onchange="refresh()">
-    <button onclick="refresh()" style="background:#64748b; padding:8px 15px;">🔄</button>
+<header class="app-header">
+    <div>
+        <h1 style="margin:0; font-size: 1.2rem;">نظام الإدارة الاحترافي</h1>
+        <div id="full-date" style="font-size: 0.8rem; opacity: 0.8;"></div>
+    </div>
+    <div class="time-section">
+        <div id="clock">00:00:00</div>
+    </div>
+</header>
+
+<div class="control-bar">
+    <input type="date" id="mDate" class="date-picker" onchange="loadData()">
+    <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+    <button class="theme-toggle" onclick="loadData()">🔄</button>
 </div>
 
-<div id="grid"></div>
-<div id="loading">جاري المزامنة...</div>
+<div class="dashboard-grid" id="mainGrid">
+    </div>
+
+<div class="reports-section">
+    <button class="btn-report" onclick="exportPDF('week')">📊 تقرير أسبوعي (PDF)</button>
+    <button class="btn-report" onclick="exportPDF('month')">🗓️ تقرير شهري (PDF)</button>
+</div>
 
 <script>
-    // ضع رابط الـ Web App URL الجديد هنا
-    const API = "https://script.google.com/macros/s/AKfycbysj12r3aJNeW7arYuxvMcrlgRpWr6FAxB-EDT4sJSx5cPRU1ETf3iJXJtX_aypi4EK/exec";
+    // ضع رابط الـ API الخاص بك هنا
+    const API = "https://script.google.com/macros/s/AKfycbyaNujQ7MVEe5fHUEr6iK1hoObeREbAcF-wez-n__szb8wO-Q2eO4UheOwcW36NqNms/exec";
     const ITEMS = ["CH30", "LR", "PR", "CP", "EDAHABIA", "CODE"];
-    let DATA = [];
+    let DATABASE = [];
 
+    // تحديث الساعة والتاريخ
+    function updateTime() {
+        const now = new Date();
+        document.getElementById('clock').innerText = now.toLocaleTimeString('en-GB');
+        document.getElementById('full-date').innerText = now.toLocaleDateString('ar-DZ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    }
+    setInterval(updateTime, 1000);
     document.getElementById('mDate').valueAsDate = new Date();
 
-    async function refresh() {
-        document.getElementById('loading').style.display = 'block';
+    // السمة (الوضع الليلي)
+    function toggleTheme() {
+        const body = document.body;
+        const current = body.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        body.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+    }
+    if(localStorage.getItem('theme')) document.body.setAttribute('data-theme', localStorage.getItem('theme'));
+
+    // جلب البيانات
+    async function loadData() {
+        document.getElementById('syncing').style.display = 'block';
         try {
-            const r = await fetch(API);
-            DATA = await r.json();
+            const res = await fetch(API);
+            DATABASE = await res.json();
             render();
-        } catch(e) { alert("خطأ في الاتصال بالسيرفر"); }
-        document.getElementById('loading').style.display = 'none';
+        } catch(e) { console.error("Error loading data"); }
+        document.getElementById('syncing').style.display = 'none';
     }
 
     function render() {
-        const grid = document.getElementById('grid');
-        const selD = new Date(document.getElementById('mDate').value);
-        selD.setHours(0,0,0,0);
+        const grid = document.getElementById('mainGrid');
+        const selDate = new Date(document.getElementById('mDate').value);
+        selDate.setHours(0,0,0,0);
         grid.innerHTML = "";
 
         ITEMS.forEach(item => {
             let s = { prev: 0, in: 0, out: 0, ret: 0 };
-            
-            // ترتيب البيانات لضمان الحساب التراكمي الصحيح
-            const logs = DATA.slice(1).sort((a,b) => new Date(a[0]) - new Date(b[0]));
+            const logs = DATABASE.slice(1).sort((a,b) => new Date(a[0]) - new Date(b[0]));
 
             logs.forEach(row => {
                 if(row[1] !== item) return;
@@ -75,46 +143,40 @@
                 const amt = parseFloat(row[3]) || 0;
                 const type = row[2];
 
-                if(d < selD) {
-                    // بناء الرصيد السابق التراكمي
+                if(d < selDate) {
                     if(type === "دخل" || type === "Initial") s.prev += amt;
                     else if(type === "خرج" || type === "RETOUR") s.prev -= amt;
                     else if(type === "Adjustment") s.prev = amt; 
-                } else if(d.getTime() === selD.getTime()) {
-                    // حركات اليوم المختار
+                } else if(d.getTime() === selDate.getTime()) {
                     if(type === "دخل") s.in += amt;
                     else if(type === "خرج") s.out += amt;
                     else if(type === "RETOUR") s.ret += amt;
-                    else if(type === "Adjustment") {
-                        // التعديل يصفر اليوم ويبدأ برقم جديد
-                        s.prev = amt; s.in = 0; s.out = 0; s.ret = 0;
-                    }
+                    else if(type === "Adjustment") { s.prev = amt; s.in = 0; s.out = 0; s.ret = 0; }
                 }
             });
 
             const total = (s.prev + s.in) - (s.out + s.ret);
 
             grid.innerHTML += `
-                <div class="card">
-                    <div class="card-h">
-                        <span style="font-size:1.2rem; font-weight:800;">${item}</span>
-                        <div class="total">الرصيد: ${total}</div>
+                <div class="item-card">
+                    <div class="card-head">
+                        <h2>${item}</h2>
+                        <div class="balance-badge">${total}</div>
                     </div>
-                    <div class="stats">
-                        <div class="s-box"><span class="s-lbl">سابق</span><span class="s-val">${s.prev}</span></div>
-                        <div class="s-box" style="color:var(--s)"><span class="s-lbl">دخل</span><span class="s-val">${s.in}</span></div>
-                        <div class="s-box" style="color:var(--d)"><span class="s-lbl">خرج</span><span class="s-val">${s.out}</span></div>
-                        <div class="s-box" style="color:var(--w)"><span class="s-lbl">مرجع</span><span class="s-val">${s.ret}</span></div>
+                    <div class="stats-row">
+                        <div class="stat-item"><span class="stat-label">سابق</span><span class="stat-value">${s.prev}</span></div>
+                        <div class="stat-item" style="color:var(--success)"><span class="stat-label">دخل</span><span class="stat-value">+${s.in}</span></div>
+                        <div class="stat-item" style="color:var(--danger)"><span class="stat-label">خرج</span><span class="stat-value">-${s.out}</span></div>
+                        <div class="stat-item" style="color:var(--warning)"><span class="stat-label">مرجع</span><span class="stat-value">-${s.ret}</span></div>
                     </div>
-                    <div class="btns">
-                        <button class="b-in" onclick="send('${item}','دخل',1)">+1</button>
-                        <button class="b-out" onclick="send('${item}','خرج',1)">-1</button>
-                        <button class="b-ret" onclick="send('${item}','RETOUR',1)">R</button>
+                    <div class="action-btns">
+                        <button class="btn btn-in" onclick="send('${item}','دخل',1)">+1 <span>زيادة</span></button>
+                        <button class="btn btn-out" onclick="send('${item}','خرج',1)">-1 <span>نقصان</span></button>
+                        <button class="btn btn-ret" onclick="send('${item}','RETOUR',1)">↩ <span>مرجع</span></button>
                     </div>
-                    <div class="adj-row">
-                        <span style="font-size:0.8rem; flex:1;">تعديل رصيد اليوم (جرد):</span>
-                        <input type="number" id="adj-${item}" class="adj-in" placeholder="0">
-                        <button onclick="doAdj('${item}')" style="background:#1e293b; padding:8px 12px;">حفظ</button>
+                    <div class="adj-box">
+                        <input type="number" id="adj-${item}" placeholder="جرد الرصيد الفعلي">
+                        <button class="btn-save" onclick="doAdj('${item}')">حفظ الجرد</button>
                     </div>
                 </div>`;
         });
@@ -122,26 +184,54 @@
 
     async function send(item, type, amount) {
         const date = document.getElementById('mDate').value;
-        document.getElementById('loading').style.display = 'block';
+        document.getElementById('syncing').style.display = 'block';
         
-        // تحديث محلي سريع
-        DATA.push([new Date(date), item, type, amount]);
+        // Optimistic UI Update
+        DATABASE.push([new Date(date), item, type, amount]);
         render();
 
         await fetch(API, {
             method: "POST",
             body: JSON.stringify({ item, type, amount, date })
         });
-        refresh(); // مزامنة نهائية مع السيرفر
+        loadData();
     }
 
     function doAdj(item) {
         const v = document.getElementById(`adj-${item}`).value;
         if(v === "") return;
         send(item, 'Adjustment', parseFloat(v));
+        document.getElementById(`adj-${item}`).value = "";
     }
 
-    refresh();
+    function exportPDF(period) {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('p', 'mm', 'a4');
+        const now = new Date();
+        const title = period === 'week' ? "التقرير الأسبوعي" : "التقرير الشهري";
+        
+        doc.text(`تطبيق 513 - ${title}`, 105, 10, { align: "center" });
+        doc.text(`بتاريخ: ${now.toLocaleDateString('ar-DZ')}`, 105, 16, { align: "center" });
+
+        const filtered = DATABASE.slice(1).filter(row => {
+            const d = new Date(row[0]);
+            const diff = (now - d) / 86400000;
+            return period === 'week' ? diff <= 7 : diff <= 30;
+        });
+
+        doc.autoTable({
+            head: [['التاريخ', 'العنصر', 'النوع', 'الكمية']],
+            body: filtered.map(r => [new Date(r[0]).toLocaleDateString(), r[1], r[2], r[3]]),
+            startY: 25,
+            theme: 'striped',
+            headStyles: { fillStyle: [0, 98, 255] }
+        });
+
+        doc.save(`Report_513_${period}.pdf`);
+    }
+
+    loadData();
+    updateTime();
 </script>
 </body>
 </html>
