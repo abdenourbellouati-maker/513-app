@@ -3,76 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>نظام 513 المحمول</title>
+    <title>نظام 513 المحمول Pro</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <style>
-        :root { --p: #007aff; --bg: #f2f2f7; --card: #ffffff; --txt: #1c1c1e; --s: #34c759; --d: #ff3b30; --w: #ff9500; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--txt); margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
+        :root { 
+            --bg: #f2f2f7; --card: #ffffff; --txt: #1c1c1e; --p: #007aff; 
+            --s: #34c759; --d: #ff3b30; --w: #ff9500; --border: #d1d1d6;
+        }
+        [data-theme="dark"] {
+            --bg: #000000; --card: #1c1c1e; --txt: #ffffff; 
+            --border: #38383a; --p: #0a84ff;
+        }
         
-        /* الهيدر العصري */
-        .header { background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; padding: 15px; border-bottom: 1px solid #d1d1d6; display: flex; flex-direction: column; align-items: center; }
-        .date-container { width: 100%; display: flex; gap: 10px; margin-top: 10px; }
-        input[type="date"] { flex: 1; border: none; background: #e5e5ea; padding: 12px; border-radius: 12px; font-weight: bold; font-size: 1rem; color: var(--txt); }
+        body { 
+            font-family: -apple-system, system-ui, sans-serif; 
+            background: var(--bg); color: var(--txt); 
+            margin: 0; padding: 0; transition: 0.3s;
+        }
 
-        /* الشبكة والبطاقات */
-        .grid { padding: 10px; display: grid; grid-template-columns: 1fr; gap: 15px; }
-        .card { background: var(--card); border-radius: 20px; padding: 18px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
-        .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .item-name { font-size: 1.4rem; font-weight: 800; color: var(--p); }
-        .bal-badge { background: var(--txt); color: white; padding: 6px 15px; border-radius: 12px; font-size: 1.2rem; font-weight: bold; }
+        .header { 
+            background: var(--card); border-bottom: 1px solid var(--border);
+            padding: 15px; position: sticky; top: 0; z-index: 100;
+        }
+        .top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .date-row { display: flex; gap: 8px; }
+        
+        input[type="date"] { 
+            flex: 1; border: none; background: var(--bg); color: var(--txt);
+            padding: 12px; border-radius: 12px; font-weight: bold; font-size: 1rem;
+        }
 
-        /* الإحصائيات */
-        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 15px; }
-        .stat-box { background: #f8f8f8; padding: 8px 2px; border-radius: 10px; text-align: center; border: 1px solid #eee; }
-        .st-lbl { font-size: 0.6rem; color: #8e8e93; display: block; }
-        .st-val { font-size: 0.9rem; font-weight: bold; }
+        .icon-btn { 
+            background: var(--bg); border: none; border-radius: 12px; 
+            padding: 10px; cursor: pointer; color: var(--txt); font-size: 1.2rem;
+        }
 
-        /* أزرار الهاتف الكبيرة */
-        .action-btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-        .btn { border: none; padding: 15px 5px; border-radius: 15px; color: white; font-weight: bold; font-size: 1rem; display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; }
-        .btn:active { opacity: 0.7; transform: scale(0.95); }
+        .grid { padding: 10px; }
+        .card { 
+            background: var(--card); border-radius: 20px; padding: 18px; 
+            margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .card-h { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .bal-badge { background: var(--p); color: white; padding: 5px 12px; border-radius: 10px; font-weight: bold; font-size: 1.1rem; }
+
+        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 15px; }
+        .s-box { background: var(--bg); padding: 8px 2px; border-radius: 10px; text-align: center; }
+        .s-lbl { font-size: 0.6rem; opacity: 0.6; display: block; }
+        .s-val { font-size: 0.9rem; font-weight: bold; }
+
+        .btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+        .btn { 
+            border: none; padding: 12px; border-radius: 12px; color: white; 
+            font-weight: bold; font-size: 0.9rem; cursor: pointer;
+        }
         .b-in { background: var(--s); } .b-out { background: var(--d); } .b-ret { background: var(--w); }
-        .btn span { font-size: 0.7rem; opacity: 0.9; }
 
-        /* التعديل المخصص */
-        .manual-zone { margin-top: 15px; display: flex; gap: 8px; padding-top: 15px; border-top: 1px solid #f2f2f7; }
-        .manual-zone input { flex: 1; border: 1px solid #d1d1d6; padding: 10px; border-radius: 10px; text-align: center; font-size: 1rem; }
-        .b-adj { background: #8e8e93; color: white; border: none; padding: 0 15px; border-radius: 10px; font-weight: bold; }
+        .manual { display: flex; gap: 8px; margin-top: 15px; border-top: 1px solid var(--border); padding-top: 15px; }
+        .manual input { flex: 1; background: var(--bg); border: none; padding: 10px; border-radius: 10px; color: var(--txt); text-align: center; }
+        
+        .footer { padding: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .rep-btn { padding: 15px; border-radius: 12px; border: none; background: #444; color: white; font-weight: bold; }
 
-        /* التقارير */
-        .footer-reports { padding: 20px; display: flex; gap: 10px; background: white; margin-top: 20px; border-top: 1px solid #d1d1d6; }
-        .rep-btn { flex: 1; padding: 15px; border-radius: 15px; border: none; background: var(--p); color: white; font-weight: bold; font-size: 0.9rem; }
-
-        /* مؤشر المزامنة */
-        #sync { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.7rem; display: none; z-index: 1000; }
+        #sync { position: fixed; top: 10px; left: 50%; transform: translateX(-50%); background: var(--p); color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; display: none; z-index: 1001; }
     </style>
 </head>
-<body>
+<body data-theme="light">
 
-<div id="sync">جاري الحفظ في السحاب...</div>
+<div id="sync">جاري المزامنة...</div>
 
 <header class="header">
-    <div style="font-weight: 900; font-size: 1.2rem; color: var(--p);">لوحة تحكم 513</div>
-    <div class="date-container">
+    <div class="top-row">
+        <span style="font-weight: 900; font-size: 1.3rem;">نظام 513 المحمول</span>
+        <div style="display:flex; gap:5px;">
+            <button class="icon-btn" onclick="toggleTheme()">🌓</button>
+            <button class="icon-btn" onclick="fetchData()">🔄</button>
+        </div>
+    </div>
+    <div class="date-row">
         <input type="date" id="mDate" onchange="fetchData()">
-        <button onclick="fetchData()" style="background:#e5e5ea; border:none; border-radius:12px; padding:0 15px;">🔄</button>
     </div>
 </header>
 
-<div class="grid" id="mainGrid"></div>
+<div class="grid" id="grid"></div>
 
-<div class="footer-reports">
-    <button class="rep-btn" style="background:#444;" onclick="exportPDF('week')">📊 تقرير أسبوعي</button>
-    <button class="rep-btn" style="background:#444;" onclick="exportPDF('month')">📅 تقرير شهري</button>
+<div class="footer">
+    <button class="rep-btn" onclick="exportPDF('week')">📊 تقرير أسبوعي</button>
+    <button class="rep-btn" onclick="exportPDF('month')">📅 تقرير شهري</button>
 </div>
 
 <script>
-    // ضع رابط الـ URL الخاص بك هنا
+    // الرابط الخاص بك
     const URL = "https://script.google.com/macros/s/AKfycbzlNw95iTW4K7lrHAGWr_sSS6mELbVaxNqc0ly9B_Kj9zjbO4myFZ_MaJFFmbKfTHLH/exec";
-    
     const ITEMS = ["CH30", "LR", "PR", "CP", "EDAHABIA", "CODE"];
     let DB = [];
+
+    // إدارة الوضع الليلي والذاكرة
+    function toggleTheme() {
+        const current = document.body.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        document.body.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+    }
+    // استعادة الوضع الليلي عند الفتح
+    if(localStorage.getItem('theme') === 'dark') document.body.setAttribute('data-theme', 'dark');
 
     document.getElementById('mDate').valueAsDate = new Date();
 
@@ -82,16 +116,15 @@
             const r = await fetch(URL);
             DB = await r.json();
             render();
-        } catch(e) { console.error("Error fetching"); }
+        } catch(e) { console.error("Error"); }
         document.getElementById('sync').style.display = 'none';
     }
 
     function render() {
-        const grid = document.getElementById('mainGrid');
+        const grid = document.getElementById('grid');
         const selD = document.getElementById('mDate').value;
         grid.innerHTML = "";
 
-        // معالجة البيانات
         const logs = DB.slice(1).sort((a,b) => String(a[0]).localeCompare(String(b[0])));
 
         ITEMS.forEach(item => {
@@ -101,9 +134,14 @@
                 const d = String(l[0]).split('T')[0];
                 const amt = parseFloat(l[3]) || 0;
                 if(d < selD) {
-                    if(l[2]==='دخل') s.prev+=amt; else if(l[2]==='خرج'||l[2]==='RETOUR') s.prev-=amt; else if(l[2]==='Adjustment') s.prev=amt;
+                    if(l[2]==='دخل') s.prev+=amt; 
+                    else if(l[2]==='خرج'||l[2]==='RETOUR') s.prev-=amt; 
+                    else if(l[2]==='Adjustment') s.prev=amt;
                 } else if(d === selD) {
-                    if(l[2]==='دخل') s.in+=amt; else if(l[2]==='خرج') s.out+=amt; else if(l[2]==='RETOUR') s.ret+=amt; else if(l[2]==='Adjustment') {s.prev=amt; s.in=0; s.out=0; s.ret=0;}
+                    if(l[2]==='دخل') s.in+=amt; 
+                    else if(l[2]==='خرج') s.out+=amt; 
+                    else if(l[2]==='RETOUR') s.ret+=amt; 
+                    else if(l[2]==='Adjustment') {s.prev=amt; s.in=0; s.out=0; s.ret=0;}
                 }
             });
 
@@ -111,87 +149,84 @@
 
             grid.innerHTML += `
                 <div class="card">
-                    <div class="card-top">
-                        <span class="item-name">${item}</span>
+                    <div class="card-h">
+                        <span style="font-weight:bold; font-size:1.2rem;">${item}</span>
                         <span class="bal-badge" id="bal-${item}">${bal}</span>
                     </div>
-                    <div class="stats-grid">
-                        <div class="stat-box"><span class="st-lbl">سابق</span><span class="st-val">${s.prev}</span></div>
-                        <div class="stat-box" style="color:var(--s)"><span class="st-lbl">دخل</span><span class="st-val" id="in-${item}">+${s.in}</span></div>
-                        <div class="stat-box" style="color:var(--d)"><span class="st-lbl">خرج</span><span class="st-val" id="out-${item}">-${s.out}</span></div>
-                        <div class="stat-box" style="color:var(--w)"><span class="st-lbl">مرجع</span><span class="st-val" id="ret-${item}">-${s.ret}</span></div>
+                    <div class="stats">
+                        <div class="s-box"><span class="s-lbl">سابق</span><span class="s-val">${s.prev}</span></div>
+                        <div class="s-box" style="color:var(--s)"><span class="s-lbl">دخل</span><span class="s-val" id="in-${item}">+${s.in}</span></div>
+                        <div class="s-box" style="color:var(--d)"><span class="s-lbl">خرج</span><span class="s-val" id="out-${item}">-${s.out}</span></div>
+                        <div class="s-box" style="color:var(--w)"><span class="s-lbl">مرجع</span><span class="s-val" id="ret-${item}">-${s.ret}</span></div>
                     </div>
-                    <div class="action-btns">
-                        <button class="btn b-in" onclick="quick('${item}','دخل',1)">+1 <span>دخل</span></button>
-                        <button class="btn b-out" onclick="sendOptimistic('${item}','خرج',1)">-1 <span>خرج</span></button>
-                        <button class="btn b-ret" onclick="sendOptimistic('${item}','RETOUR',1)">↩ <span>مرجع</span></button>
+                    <div class="btns">
+                        <button class="btn b-in" onclick="quick('${item}','دخل',1)">+1 دخل</button>
+                        <button class="btn b-out" onclick="quick('${item}','خرج',1)">-1 خرج</button>
+                        <button class="btn b-ret" onclick="quick('${item}','RETOUR',1)">مرجع</button>
                     </div>
-                    <div class="manual-zone">
+                    <div class="manual">
                         <input type="number" id="amt-${item}" placeholder="كمية مخصصة">
-                        <button class="b-adj" onclick="manual('${item}')">حفظ</button>
+                        <button onclick="manual('${item}')" style="background:var(--p); color:white; border:none; padding:10px 15px; border-radius:10px; font-weight:bold;">حفظ</button>
                     </div>
                 </div>`;
         });
     }
 
-    // المزامنة الفورية (تحديث الرقم في الموقع قبل وصول الرد من السيرفر)
-    function sendOptimistic(item, type, amt) {
+    async function quick(item, type, amt) {
+        // تحديث فوري للشاشة (Speed)
         const balEl = document.getElementById(`bal-${item}`);
-        const inEl = document.getElementById(`in-${item}`);
-        const outEl = document.getElementById(`out-${item}`);
-        const retEl = document.getElementById(`ret-${item}`);
-
         let current = parseFloat(balEl.innerText);
-        if(type === 'دخل') {
-            balEl.innerText = current + amt;
-            inEl.innerText = "+" + (parseFloat(inEl.innerText) + amt);
-        } else if(type === 'خرج') {
-            balEl.innerText = current - amt;
-            outEl.innerText = "-" + (Math.abs(parseFloat(outEl.innerText)) + amt);
-        } else if(type === 'RETOUR') {
-            balEl.innerText = current - amt;
-            retEl.innerText = "-" + (Math.abs(parseFloat(retEl.innerText)) + amt);
-        }
+        balEl.innerText = (type === 'دخل') ? current + amt : current - amt;
 
-        sendToServer(item, type, amt);
-    }
-
-    async function sendToServer(item, type, amount) {
         const date = document.getElementById('mDate').value;
         document.getElementById('sync').style.display = 'block';
         await fetch(URL, {
             method: "POST",
-            body: JSON.stringify({ item, type, amount, date })
+            body: JSON.stringify({ item, type, amount: amt, date })
         });
         document.getElementById('sync').style.display = 'none';
-        // تحديث البيانات في الخلفية بدون تعطيل المستخدم
-        const r = await fetch(URL);
-        DB = await r.json();
+        fetchData(); // تحديث الخلفية للتأكد
     }
-
-    function quick(item, type, amt) { sendOptimistic(item, type, amt); }
 
     function manual(item) {
         const amt = parseFloat(document.getElementById(`amt-${item}`).value);
-        if(isNaN(amt)) return;
-        sendToServer(item, 'Adjustment', amt).then(()=>fetchData());
+        if(!isNaN(amt)) quick(item, 'Adjustment', amt);
         document.getElementById(`amt-${item}`).value = "";
     }
 
-    function exportPDF(p) {
+    // إصلاح التقارير وتنسيقها
+    function exportPDF(period) {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        doc.text(`Report 513 - ${p}`, 105, 10, {align:'center'});
+        
+        // إعدادات الخط والعناوين
+        doc.setFontSize(18);
+        doc.text(`Report 513 - ${period === 'week' ? 'Weekly' : 'Monthly'}`, 105, 15, { align: 'center' });
+        
+        const now = new Date();
         const filtered = DB.slice(1).filter(r => {
-            const diff = (new Date() - new Date(r[0])) / 86400000;
-            return p === 'week' ? diff <= 7 : diff <= 30;
-        });
+            const rowDate = new Date(r[0]);
+            const diffDays = (now - rowDate) / (1000 * 60 * 60 * 24);
+            return period === 'week' ? diffDays <= 7 : diffDays <= 30;
+        }).sort((a, b) => new Date(a[0]) - new Date(b[0])); // ترتيب تصاعدي حسب التاريخ
+
+        const body = filtered.map(r => [
+            String(r[0]).split('T')[0], // التاريخ
+            r[1], // العنصر
+            r[2], // النوع
+            r[3]  // الكمية
+        ]);
+
         doc.autoTable({
-            head: [['Date', 'Item', 'Type', 'Amt']],
-            body: filtered.map(r => [String(r[0]).split('T')[0], r[1], r[2], r[3]]),
-            startY: 20
+            startY: 25,
+            head: [['Date', 'Item', 'Type', 'Amount']],
+            body: body,
+            theme: 'grid',
+            headStyles: { fillGray: 200, textColor: 0, fontStyle: 'bold' },
+            styles: { fontSize: 10, halign: 'center' }
         });
-        doc.save(`Report_${p}.pdf`);
+
+        doc.save(`513_Report_${period}.pdf`);
     }
 
     fetchData();
