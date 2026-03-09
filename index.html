@@ -3,87 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام الإدارة المحاسبي 513</title>
+    <title>نظام 513 المحاسبي المتطور</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <style>
-        :root {
-            --bg: #f0f2f5; --card: #ffffff; --text: #1c1e21; --primary: #0062ff;
-            --success: #2ecc71; --danger: #e74c3c; --warning: #f1c40f; --accent: #8e44ad;
-        }
-        [data-theme="dark"] {
-            --bg: #18191a; --card: #242526; --text: #e4e6eb; --primary: #4589ff;
-        }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; transition: 0.3s; }
-        .header { background: var(--primary); color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .clock { font-size: 1.4rem; font-weight: bold; font-family: 'Courier New', monospace; }
+        :root { --bg: #f8fafc; --card: #ffffff; --primary: #2563eb; --success: #10b981; --danger: #ef4444; --warning: #f59e0b; --text: #1e293b; }
+        [data-theme="dark"] { --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --primary: #3b82f6; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; transition: 0.3s; padding-bottom: 50px; }
+        .header { background: var(--primary); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .clock { font-family: monospace; font-size: 1.2rem; font-weight: bold; }
         
-        .control-bar { padding: 15px; display: flex; gap: 10px; align-items: center; max-width: 800px; margin: auto; }
-        .date-picker { padding: 12px; border-radius: 12px; border: 1px solid #ddd; background: var(--card); color: var(--text); flex: 1; font-size: 1rem; }
-        .theme-btn { background: var(--card); border: none; width: 45px; height: 45px; border-radius: 12px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); font-size: 1.2rem; }
+        .control-panel { max-width: 800px; margin: 20px auto; padding: 0 15px; display: flex; gap: 10px; }
+        .date-input { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #cbd5e1; background: var(--card); color: var(--text); font-size: 1rem; }
+        
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px; padding: 15px; max-width: 1200px; margin: auto; }
+        .card { background: var(--card); border-radius: 20px; padding: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border-top: 5px solid var(--primary); }
+        .card-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .bal-badge { background: #1e293b; color: white; padding: 4px 12px; border-radius: 8px; font-weight: bold; }
 
-        .grid { padding: 15px; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; max-width: 1200px; margin: auto; }
-        .card { background: var(--card); border-radius: 20px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); position: relative; border-right: 6px solid var(--primary); transition: 0.3s; }
-        .card:hover { transform: translateY(-5px); }
-        .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .balance-label { background: #333; color: #fff; padding: 5px 15px; border-radius: 20px; font-weight: bold; }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+        .stat-item { background: rgba(0,0,0,0.03); padding: 10px 5px; border-radius: 10px; text-align: center; }
+        .stat-label { font-size: 0.7rem; color: #64748b; display: block; }
+        .stat-val { font-weight: bold; font-size: 1.1rem; }
 
-        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
-        .s-item { background: rgba(0,0,0,0.03); padding: 10px 5px; border-radius: 12px; text-align: center; }
-        .s-lbl { font-size: 0.7rem; color: #777; display: block; margin-bottom: 5px; }
-        .s-val { font-weight: bold; font-size: 1.1rem; }
+        .quick-actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 15px; }
+        .btn { border: none; padding: 12px 5px; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; font-size: 0.85rem; }
+        .btn-in { background: var(--success); } .btn-out { background: var(--danger); } .btn-ret { background: var(--warning); color: #000; }
+        
+        .manual-input { display: flex; gap: 5px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #cbd5e1; }
+        .manual-input input { flex: 1; padding: 8px; border-radius: 6px; border: 1px solid #cbd5e1; background: var(--bg); color: var(--text); }
+        .btn-add { background: var(--primary); color: white; border: none; padding: 0 12px; border-radius: 6px; cursor: pointer; }
 
-        .actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-        .btn { border: none; padding: 15px; border-radius: 12px; color: white; font-weight: bold; cursor: pointer; transition: 0.1s; }
-        .btn:active { transform: scale(0.95); }
-        .b-in { background: var(--success); } .b-out { background: var(--danger); } .b-ret { background: var(--warning); color: #000; }
-
-        .adj-section { margin-top: 15px; border-top: 1px dashed #ddd; padding-top: 15px; display: flex; gap: 8px; }
-        .adj-input { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #ddd; background: var(--bg); color: var(--text); }
-        .b-adj { background: var(--accent); color: white; border: none; padding: 0 15px; border-radius: 8px; cursor: pointer; }
-
-        .report-section { padding: 20px; max-width: 800px; margin: auto; display: flex; gap: 10px; }
-        .b-rep { flex: 1; padding: 15px; border-radius: 15px; border: none; background: #34495e; color: white; font-weight: bold; cursor: pointer; }
-
-        #status { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #000; color: #fff; padding: 8px 25px; border-radius: 25px; display: none; z-index: 2000; }
+        .reports { max-width: 800px; margin: 20px auto; padding: 0 15px; display: flex; gap: 10px; }
+        .btn-rep { flex: 1; padding: 15px; border-radius: 12px; border: none; background: #334155; color: white; font-weight: bold; cursor: pointer; }
+        
+        #loader { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #000; color: #fff; padding: 8px 25px; border-radius: 20px; display: none; z-index: 100; }
     </style>
 </head>
 <body data-theme="light">
 
+<div id="loader">مزامنة التاريخ والبيانات...</div>
+
 <header class="header">
     <div>
-        <h2 style="margin:0;">Dashboard 513</h2>
-        <div id="date-now" style="font-size: 0.8rem; opacity: 0.9;"></div>
+        <h2 style="margin:0; font-size: 1.1rem;">نظام 513 المحاسبي</h2>
+        <div id="top-date" style="font-size: 0.75rem;"></div>
     </div>
     <div class="clock" id="clock">00:00:00</div>
 </header>
 
-<div class="control-bar">
-    <input type="date" id="mDate" class="date-picker" onchange="fetchData()">
-    <button class="theme-btn" onclick="toggleTheme()">🌓</button>
-    <button class="theme-btn" onclick="fetchData()">🔄</button>
+<div class="control-panel">
+    <input type="date" id="mDate" class="date-input" onchange="loadData()">
+    <button onclick="toggleTheme()" style="padding:10px; border-radius:10px; border:none; background:var(--card); cursor:pointer;">🌓</button>
 </div>
 
 <div class="grid" id="mainGrid"></div>
 
-<div class="report-section">
-    <button class="b-rep" onclick="exportPDF('week')">📊 تقرير أسبوعي</button>
-    <button class="b-rep" onclick="exportPDF('month')">📅 تقرير شهري</button>
+<div class="reports">
+    <button class="btn-rep" onclick="exportPDF('week')">📊 تقرير أسبوعي</button>
+    <button class="btn-rep" onclick="exportPDF('month')">📅 تقرير شهري</button>
 </div>
 
-<div id="status">مزامنة البيانات...</div>
-
 <script>
-    // استبدل هذا بالرابط الخاص بك من Google Apps Script
-    const URL = "https://script.google.com/macros/s/AKfycbyaNujQ7MVEe5fHUEr6iK1hoObeREbAcF-wez-n__szb8wO-Q2eO4UheOwcW36NqNms/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbyaNujQ7MVEe5fHUEr6iK1hoObeREbAcF-wez-n__szb8wO-Q2eO4UheOwcW36NqNms/exec";
     const ITEMS = ["CH30", "LR", "PR", "CP", "EDAHABIA", "CODE"];
     let DB = [];
 
-    // إدارة الوقت والوضع الليلي
     function updateClock() {
-        const n = new Date();
-        document.getElementById('clock').innerText = n.toLocaleTimeString('en-GB');
-        document.getElementById('date-now').innerText = n.toLocaleDateString('ar-DZ', {weekday:'long', day:'numeric', month:'long'});
+        const now = new Date();
+        document.getElementById('clock').innerText = now.toLocaleTimeString('en-GB');
+        document.getElementById('top-date').innerText = now.toLocaleDateString('ar-DZ', {weekday:'long', day:'numeric', month:'long'});
     }
     setInterval(updateClock, 1000);
     document.getElementById('mDate').valueAsDate = new Date();
@@ -92,25 +81,22 @@
         const b = document.body;
         const t = b.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
         b.setAttribute('data-theme', t);
-        localStorage.setItem('513theme', t);
     }
-    if(localStorage.getItem('513theme')) document.body.setAttribute('data-theme', localStorage.getItem('513theme'));
 
-    // جلب ومعالجة البيانات
-    async function fetchData() {
-        document.getElementById('status').style.display = 'block';
+    async function loadData() {
+        document.getElementById('loader').style.display = 'block';
         try {
-            const r = await fetch(URL);
+            const r = await fetch(API_URL);
             DB = await r.json();
             render();
-        } catch(e) { console.error("Fetch Error"); }
-        document.getElementById('status').style.display = 'none';
+        } catch(e) { console.log("Error"); }
+        document.getElementById('loader').style.display = 'none';
     }
 
     function render() {
         const grid = document.getElementById('mainGrid');
-        const selD = new Date(document.getElementById('mDate').value);
-        selD.setHours(0,0,0,0);
+        const selDate = new Date(document.getElementById('mDate').value);
+        selDate.setHours(0,0,0,0);
         grid.innerHTML = "";
 
         ITEMS.forEach(item => {
@@ -121,11 +107,11 @@
                 const d = new Date(l[0]); d.setHours(0,0,0,0);
                 const type = l[2]; const amt = parseFloat(l[3]) || 0;
 
-                if(d < selD) {
+                if(d < selDate) {
                     if(type === "دخل" || type === "Initial") s.prev += amt;
                     else if(type === "خرج" || type === "RETOUR") s.prev -= amt;
                     else if(type === "Adjustment") s.prev = amt;
-                } else if(d.getTime() === selD.getTime()) {
+                } else if(d.getTime() === selDate.getTime()) {
                     if(type === "دخل") s.in += amt;
                     else if(type === "خرج") s.out += amt;
                     else if(type === "RETOUR") s.ret += amt;
@@ -133,69 +119,78 @@
                 }
             });
 
-            const bal = (s.prev + s.in) - (s.out + s.ret);
+            const total = (s.prev + s.in) - (s.out + s.ret);
 
             grid.innerHTML += `
                 <div class="card">
-                    <div class="card-head">
-                        <h3 style="margin:0;">${item}</h3>
-                        <div class="balance-label">${bal}</div>
+                    <div class="card-title"><h3>${item}</h3> <span class="bal-badge">${total}</span></div>
+                    <div class="stats-grid">
+                        <div class="stat-item"><span class="stat-label">سابق</span><span class="stat-val">${s.prev}</span></div>
+                        <div class="stat-item" style="color:var(--success)"><span class="stat-label">دخل</span><span class="stat-val">${s.in}</span></div>
+                        <div class="stat-item" style="color:var(--danger)"><span class="stat-label">خرج</span><span class="stat-val">${s.out}</span></div>
+                        <div class="stat-item" style="color:var(--warning)"><span class="stat-label">مرجع</span><span class="stat-val">${s.ret}</span></div>
                     </div>
-                    <div class="stats">
-                        <div class="s-item"><span class="s-lbl">سابق</span><span class="s-val">${s.prev}</span></div>
-                        <div class="s-item" style="color:var(--success)"><span class="s-lbl">دخل</span><span class="s-val">+${s.in}</span></div>
-                        <div class="s-item" style="color:var(--danger)"><span class="s-lbl">خرج</span><span class="s-val">-${s.out}</span></div>
-                        <div class="s-item" style="color:var(--warning)"><span class="s-lbl">مرجع</span><span class="s-val">-${s.ret}</span></div>
+                    <div class="quick-actions">
+                        <button class="btn btn-in" onclick="send('${item}','دخل',1)">+1 دخل</button>
+                        <button class="btn btn-out" onclick="send('${item}','خرج',1)">-1 خرج</button>
+                        <button class="btn btn-ret" onclick="send('${item}','RETOUR',1)">↩ مرجع</button>
                     </div>
-                    <div class="actions">
-                        <button class="btn b-in" onclick="send('${item}','دخل',1)">+1</button>
-                        <button class="btn b-out" onclick="send('${item}','خرج',1)">-1</button>
-                        <button class="btn b-ret" onclick="send('${item}','RETOUR',1)">↩</button>
-                    </div>
-                    <div class="adj-section">
-                        <input type="number" id="v-${item}" class="adj-input" placeholder="ضبط الرصيد">
-                        <button class="b-adj" onclick="adj('${item}')">حفظ</button>
+                    <div class="manual-input">
+                        <input type="number" id="amt-${item}" placeholder="كمية...">
+                        <select id="type-${item}" style="padding:8px; border-radius:6px; border:1px solid #ccc;">
+                            <option value="دخل">دخل</option>
+                            <option value="خرج">خرج</option>
+                            <option value="RETOUR">مرجع</option>
+                            <option value="Adjustment">جرد (تعديل)</option>
+                        </select>
+                        <button class="btn-add" onclick="manualAdd('${item}')">حفظ</button>
                     </div>
                 </div>`;
         });
     }
 
     async function send(item, type, amount) {
-        const date = document.getElementById('mDate').value;
-        document.getElementById('status').style.display = 'block';
+        // السر هنا: نأخذ التاريخ المختار من التقويم
+        const selectedDate = document.getElementById('mDate').value; 
+        document.getElementById('loader').style.display = 'block';
         
-        // تحديث محلي سريع
-        DB.push([new Date(date), item, type, amount]);
+        // تحديث محلي فوري (Optimistic)
+        DB.push([new Date(selectedDate), item, type, amount]);
         render();
 
-        await fetch(URL, { method: "POST", body: JSON.stringify({ item, type, amount, date }) });
-        fetchData();
+        await fetch(API_URL, {
+            method: "POST",
+            body: JSON.stringify({ item, type, amount, date: selectedDate })
+        });
+        loadData();
     }
 
-    function adj(item) {
-        const v = document.getElementById(`v-${item}`).value;
-        if(v !== "") send(item, 'Adjustment', parseFloat(v));
+    function manualAdd(item) {
+        const amt = document.getElementById(`amt-${item}`).value;
+        const type = document.getElementById(`type-${item}`).value;
+        if(amt !== "") {
+            send(item, type, parseFloat(amt));
+            document.getElementById(`amt-${item}`).value = "";
+        }
     }
 
     function exportPDF(p) {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        doc.text(`تقرير 513 - ${p === 'week' ? 'أسبوعي' : 'شهري'}`, 105, 10, {align:'center'});
-        
+        doc.text(`Report 513 - ${p}`, 105, 10, {align:'center'});
         const filtered = DB.slice(1).filter(r => {
             const diff = (new Date() - new Date(r[0])) / 86400000;
             return p === 'week' ? diff <= 7 : diff <= 30;
         });
-
         doc.autoTable({
-            head: [['التاريخ', 'العنصر', 'النوع', 'الكمية']],
+            head: [['Date', 'Item', 'Type', 'Amount']],
             body: filtered.map(r => [new Date(r[0]).toLocaleDateString(), r[1], r[2], r[3]]),
             startY: 20
         });
         doc.save(`Report_${p}.pdf`);
     }
 
-    fetchData();
+    loadData();
     updateClock();
 </script>
 </body>
