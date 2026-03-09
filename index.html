@@ -2,76 +2,53 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
+    <title>نظام 513 المحاسبي</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام 513 المحاسبي - النسخة النهائية</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <style>
-        :root { --bg: #f8fafc; --card: #ffffff; --primary: #2563eb; --text: #1e293b; --success: #10b981; --danger: #ef4444; }
-        [data-theme="dark"] { --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; }
-        body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 50px; transition: 0.3s; }
-        .header { background: var(--primary); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .control-panel { max-width: 800px; margin: 20px auto; padding: 0 15px; display: flex; gap: 10px; }
-        .date-input { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #cbd5e1; background: var(--card); color: var(--text); font-size: 1rem; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; padding: 15px; max-width: 1200px; margin: auto; }
-        .card { background: var(--card); border-radius: 20px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 5px solid var(--primary); }
-        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 15px 0; }
-        .stat-item { background: rgba(0,0,0,0.03); padding: 8px 2px; border-radius: 8px; text-align: center; }
-        .stat-label { font-size: 0.65rem; color: #64748b; display: block; }
-        .stat-val { font-weight: bold; font-size: 1rem; }
-        .btn-group { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-        .btn { border: none; padding: 12px; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; }
-        .b-in { background: var(--success); } .b-out { background: var(--danger); } .b-ret { background: #f59e0b; }
-        .manual-input { display: flex; gap: 5px; margin-top: 15px; border-top: 1px dashed #ccc; padding-top: 15px; }
-        .manual-input input { flex: 1; padding: 8px; border-radius: 6px; border: 1px solid #ccc; background: var(--bg); color: var(--text); }
-        #status { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #000; color: #fff; padding: 8px 25px; border-radius: 25px; display: none; z-index: 100; }
+        :root { --p: #2563eb; --bg: #f1f5f9; --txt: #1e293b; }
+        body { font-family: sans-serif; background: var(--bg); color: var(--txt); margin: 0; padding: 10px; }
+        .card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-top: 5px solid var(--p); }
+        .header { background: var(--p); color: white; padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 15px; }
+        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin: 15px 0; text-align: center; }
+        .stat-box { background: #f8fafc; padding: 5px; border-radius: 5px; border: 1px solid #e2e8f0; }
+        .stat-label { font-size: 10px; color: #64748b; }
+        .stat-val { font-weight: bold; display: block; }
+        input, select, button { padding: 10px; border-radius: 8px; border: 1px solid #ccc; }
+        button { background: var(--p); color: white; cursor: pointer; border: none; font-weight: bold; }
+        #loading { position: fixed; top: 0; left: 0; width: 100%; background: orange; text-align: center; display: none; }
     </style>
 </head>
 <body>
 
-<div id="status">جاري تحديث البيانات...</div>
+<div id="loading">جاري المزامنة...</div>
 
-<header class="header">
-    <h2 style="margin:0; font-size: 1.2rem;">نظام 513 الاحترافي</h2>
-    <button onclick="toggleTheme()" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">🌓</button>
-</header>
-
-<div class="control-panel">
-    <input type="date" id="mDate" class="date-input" onchange="fetchData()">
-    <button onclick="fetchData()" style="padding:10px; border-radius:10px; border:none; background:var(--card); cursor:pointer;">🔄</button>
+<div class="header">
+    <h3>نظام 513 المحاسبي</h3>
+    <input type="date" id="mDate" onchange="fetchData()" style="width: 80%;">
 </div>
 
-<div class="grid" id="mainGrid"></div>
+<div id="grid"></div>
 
 <script>
-    // --- هام جداً: ضع رابط الـ API الخاص بك هنا ---
-    const API_URL = "https://script.google.com/macros/s/AKfycbyaNujQ7MVEe5fHUEr6iK1hoObeREbAcF-wez-n__szb8wO-Q2eO4UheOwcW36NqNms/exec";
-    
-    const ITEMS = ["CH30", "LR", "PR", "CP", "EDAHABIA", "CODE"];
-    let DB = [];
+    // ⬇️ ضع الرابط الجديد الذي نسخته من الخطوة رقم 1 هنا ⬇️
+    const URL = "https://script.google.com/macros/s/AKfycbygHU6LpsE1B8SoutvtunruzlSildV7xq3p-Cnxrn8ne1Lc1JIFrAu4ECzhRGE-bCI1/exec";
 
+    let DB = [];
+    const ITEMS = ["CH30", "LR", "PR", "CP", "EDAHABIA", "CODE"];
     document.getElementById('mDate').valueAsDate = new Date();
 
-    function toggleTheme() {
-        const b = document.body;
-        const t = b.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-        b.setAttribute('data-theme', t);
-    }
-
     async function fetchData() {
-        document.getElementById('status').style.display = 'block';
-        try {
-            const r = await fetch(API_URL);
-            DB = await r.json();
-            render();
-        } catch(e) { console.error("Error fetching data"); }
-        document.getElementById('status').style.display = 'none';
+        document.getElementById('loading').style.display = 'block';
+        const r = await fetch(URL);
+        DB = await r.json();
+        render();
+        document.getElementById('loading').style.display = 'none';
     }
 
     function render() {
-        const grid = document.getElementById('mainGrid');
-        const selDate = new Date(document.getElementById('mDate').value);
-        selDate.setHours(0,0,0,0);
+        const grid = document.getElementById('grid');
+        const selD = new Date(document.getElementById('mDate').value);
+        selD.setHours(0,0,0,0);
         grid.innerHTML = "";
 
         ITEMS.forEach(item => {
@@ -82,11 +59,11 @@
                 const d = new Date(l[0]); d.setHours(0,0,0,0);
                 const type = l[2]; const amt = parseFloat(l[3]) || 0;
 
-                if(d < selDate) {
+                if(d < selD) {
                     if(type === "دخل" || type === "Initial") s.prev += amt;
                     else if(type === "خرج" || type === "RETOUR") s.prev -= amt;
                     else if(type === "Adjustment") s.prev = amt;
-                } else if(d.getTime() === selDate.getTime()) {
+                } else if(d.getTime() === selD.getTime()) {
                     if(type === "دخل") s.in += amt;
                     else if(type === "خرج") s.out += amt;
                     else if(type === "RETOUR") s.ret += amt;
@@ -94,55 +71,41 @@
                 }
             });
 
-            const total = (s.prev + s.in) - (s.out + s.ret);
-
             grid.innerHTML += `
                 <div class="card">
-                    <div style="display:flex; justify-content:space-between;"><h3>${item}</h3> <b style="font-size:1.3rem;">${total}</b></div>
-                    <div class="stats-grid">
-                        <div class="stat-item"><span class="stat-label">سابق</span><span class="stat-val">${s.prev}</span></div>
-                        <div class="stat-item" style="color:var(--success)"><span class="stat-label">دخل</span><span class="stat-val">+${s.in}</span></div>
-                        <div class="stat-item" style="color:var(--danger)"><span class="stat-label">خرج</span><span class="stat-val">-${s.out}</span></div>
-                        <div class="stat-item" style="color:#f59e0b"><span class="stat-label">مرجع</span><span class="stat-val">-${s.ret}</span></div>
+                    <div style="display:flex; justify-content:space-between;"><b>${item}</b> <span>الرصيد: ${ (s.prev + s.in) - (s.out + s.ret) }</span></div>
+                    <div class="stats">
+                        <div class="stat-box"><span class="stat-label">سابق</span><span class="stat-val">${s.prev}</span></div>
+                        <div class="stat-box"><span class="stat-label">دخل</span><span class="stat-val">+${s.in}</span></div>
+                        <div class="stat-box"><span class="stat-label">خرج</span><span class="stat-val">-${s.out}</span></div>
+                        <div class="stat-box"><span class="stat-label">مرجع</span><span class="stat-val">-${s.ret}</span></div>
                     </div>
-                    <div class="btn-group">
-                        <button class="btn b-in" onclick="send('${item}','دخل',1)">+1</button>
-                        <button class="btn b-out" onclick="send('${item}','خرج',1)">-1</button>
-                        <button class="btn b-ret" onclick="send('${item}','RETOUR',1)">R</button>
-                    </div>
-                    <div class="manual-input">
-                        <input type="number" id="amt-${item}" placeholder="كمية">
-                        <select id="type-${item}" style="padding:5px; border-radius:5px;">
+                    <div style="display:flex; gap:5px;">
+                        <input type="number" id="amt-${item}" placeholder="الكمية" style="width:50px;">
+                        <select id="type-${item}">
                             <option value="دخل">دخل</option>
                             <option value="خرج">خرج</option>
                             <option value="RETOUR">مرجع</option>
                             <option value="Adjustment">تعديل رصيد</option>
                         </select>
-                        <button onclick="manualAdd('${item}')" style="background:var(--primary); color:white; border:none; padding:8px 12px; border-radius:6px; cursor:pointer;">حفظ</button>
+                        <button onclick="sendData('${item}')">حفظ</button>
                     </div>
                 </div>`;
         });
     }
 
-    // هذه هي الدالة التي كنت تبحث عنها (تعديل التاريخ تم هنا)
-    async function send(item, type, amount) {
-        const selectedDate = document.getElementById('mDate').value; // التقاط التاريخ المختار من التقويم
-        document.getElementById('status').style.display = 'block';
-        
-        try {
-            await fetch(API_URL, {
-                method: "POST",
-                body: JSON.stringify({ item, type, amount, date: selectedDate }) // إرسال التاريخ المختار حرفياً
-            });
-            await fetchData(); 
-        } catch(e) { alert("خطأ في الاتصال"); }
-        document.getElementById('status').style.display = 'none';
-    }
-
-    function manualAdd(item) {
+    async function sendData(item) {
+        const date = document.getElementById('mDate').value; // التقاط التاريخ المختار حرفياً
         const amt = document.getElementById(`amt-${item}`).value;
         const type = document.getElementById(`type-${item}`).value;
-        if(amt) { send(item, type, parseFloat(amt)); document.getElementById(`amt-${item}`).value = ""; }
+        if(!amt) return alert("ضع الكمية");
+
+        document.getElementById('loading').style.display = 'block';
+        await fetch(URL, {
+            method: "POST",
+            body: JSON.stringify({ item, type, amount: parseFloat(amt), date: date })
+        });
+        fetchData();
     }
 
     fetchData();
