@@ -3,45 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>نظام 513 المحمول v6</title>
+    <title>نظام 513 الاحترافي</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <style>
         :root { --bg: #f2f2f7; --card: #ffffff; --txt: #1c1c1e; --p: #007aff; --s: #34c759; --d: #ff3b30; --w: #ff9500; --border: #d1d1d6; }
         [data-theme="dark"] { --bg: #000; --card: #1c1c1e; --txt: #fff; --border: #38383a; --p: #0a84ff; }
-        body { font-family: sans-serif; background: var(--bg); color: var(--txt); margin: 0; padding: 0; transition: 0.3s; }
-        .header { background: var(--card); border-bottom: 1px solid var(--border); padding: 15px; position: sticky; top: 0; z-index: 100; }
-        .top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        input[type="date"] { flex: 1; border: none; background: var(--bg); color: var(--txt); padding: 12px; border-radius: 12px; font-weight: bold; width: 100%; }
-        .icon-btn { background: var(--bg); border: none; border-radius: 12px; padding: 10px; cursor: pointer; color: var(--txt); }
-        .grid { padding: 10px; }
-        .card { background: var(--card); border-radius: 20px; padding: 18px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .card-h { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .bal-badge { background: var(--p); color: white; padding: 5px 12px; border-radius: 10px; font-weight: bold; }
-        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 15px; }
-        .s-box { background: var(--bg); padding: 8px 2px; border-radius: 10px; text-align: center; }
-        .s-lbl { font-size: 0.6rem; opacity: 0.6; display: block; }
-        .s-val { font-size: 0.85rem; font-weight: bold; }
-        .btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-        .btn { border: none; padding: 12px; border-radius: 12px; color: white; font-weight: bold; cursor: pointer; }
+        
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--txt); margin: 0; padding: 0; transition: background 0.3s; overflow-x: hidden; }
+        
+        /* الهيدر العصري */
+        .header { background: var(--card); border-bottom: 1px solid var(--border); padding: 15px; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px); }
+        .top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        
+        /* زر الوضع الليلي العصري */
+        .theme-toggle { width: 45px; height: 45px; border-radius: 12px; border: none; background: var(--bg); color: var(--txt); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; transition: 0.2s; }
+        .theme-toggle:active { transform: scale(0.9); }
+
+        input[type="date"] { border: 1px solid var(--border); background: var(--bg); color: var(--txt); padding: 12px; border-radius: 14px; font-weight: 600; width: 100%; box-sizing: border-box; font-size: 1rem; }
+
+        .grid { padding: 12px; }
+        .card { background: var(--card); border-radius: 24px; padding: 20px; margin-bottom: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.05); border: 1px solid var(--border); }
+        .card-h { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+        .item-title { font-size: 1.3rem; font-weight: 800; letter-spacing: -0.5px; }
+        .bal-badge { background: var(--p); color: white; padding: 6px 16px; border-radius: 14px; font-weight: 800; font-size: 1.1rem; }
+
+        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 18px; }
+        .s-box { background: var(--bg); padding: 10px 2px; border-radius: 12px; text-align: center; }
+        .s-lbl { font-size: 0.6rem; opacity: 0.5; display: block; margin-bottom: 2px; }
+        .s-val { font-size: 0.9rem; font-weight: 700; }
+
+        .btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        .btn { border: none; padding: 16px; border-radius: 16px; color: white; font-weight: 700; cursor: pointer; font-size: 1rem; transition: 0.1s; }
+        .btn:active { transform: scale(0.96); opacity: 0.8; }
         .b-in { background: var(--s); } .b-out { background: var(--d); } .b-ret { background: var(--w); }
-        .manual { display: flex; gap: 8px; margin-top: 15px; border-top: 1px solid var(--border); padding-top: 15px; }
-        .manual input { flex: 1; background: var(--bg); border: none; padding: 10px; border-radius: 10px; color: var(--txt); text-align: center; }
-        .footer { padding: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: var(--card); }
-        .rep-btn { padding: 15px; border-radius: 12px; border: none; background: #444; color: white; font-weight: bold; }
-        #sync { position: fixed; top: 10px; left: 50%; transform: translateX(-50%); background: var(--p); color: white; padding: 5px 15px; border-radius: 20px; display: none; z-index: 1001; }
+
+        .manual { display: flex; gap: 8px; margin-top: 18px; border-top: 1px solid var(--border); padding-top: 18px; }
+        .manual input { flex: 1; background: var(--bg); border: 1px solid var(--border); padding: 12px; border-radius: 12px; color: var(--txt); text-align: center; font-size: 1rem; }
+        .b-save { background: var(--txt); color: var(--card); border: none; padding: 0 20px; border-radius: 12px; font-weight: 700; }
+
+        .footer { padding: 15px 15px 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .rep-btn { padding: 18px; border-radius: 18px; border: none; background: #2c2c2e; color: white; font-weight: 700; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        
+        #sync-dot { width: 8px; height: 8px; background: var(--s); border-radius: 50%; display: none; margin-left: 8px; }
     </style>
 </head>
 <body data-theme="light">
 
-<div id="sync">جاري المزامنة...</div>
-
 <header class="header">
     <div class="top-row">
-        <span style="font-weight: 900; font-size: 1.3rem;">نظام 513 المحمول</span>
-        <div style="display:flex; gap:5px;">
-            <button class="icon-btn" onclick="toggleTheme()">🌓</button>
-            <button class="icon-btn" onclick="fetchData()">🔄</button>
+        <div style="display:flex; align-items:center;">
+            <div id="sync-dot"></div>
+            <span style="font-weight: 900; font-size: 1.4rem; letter-spacing: -1px;">DASHBOARD 513</span>
+        </div>
+        <div style="display:flex; gap:8px;">
+            <button class="theme-toggle" onclick="toggleTheme()" id="tBtn">☼</button>
+            <button class="theme-toggle" onclick="fetchData()">↻</button>
         </div>
     </div>
     <input type="date" id="mDate" onchange="fetchData()">
@@ -50,40 +67,44 @@
 <div class="grid" id="grid"></div>
 
 <div class="footer">
-    <button class="rep-btn" onclick="exportPDF('week')">📊 Weekly Report</button>
-    <button class="rep-btn" onclick="exportPDF('month')">📅 Monthly Report</button>
+    <button class="rep-btn" onclick="exportPDF('week')">📄 Week Summary</button>
+    <button class="rep-btn" onclick="exportPDF('month')">📅 Month Summary</button>
 </div>
 
 <script>
-    // --- ضـع رابط الـ URL الخـاص بـك هنـا ---
+    // الرابط الخاص بك (تأكد من أنه New Deployment)
     const URL = "https://script.google.com/macros/s/AKfycbysj12r3aJNeW7arYuxvMcrlgRpWr6FAxB-EDT4sJSx5cPRU1ETf3iJXJtX_aypi4EK/exec";
-    
     const ITEMS = ["CH30", "LR", "PR", "CP", "EDAHABIA", "CODE"];
     let DB = [];
 
+    // إدارة الوضع الليلي المطور
     function toggleTheme() {
-        const next = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-        document.body.setAttribute('data-theme', next);
+        const b = document.body;
+        const next = b.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        b.setAttribute('data-theme', next);
+        document.getElementById('tBtn').innerText = next === 'dark' ? '☾' : '☼';
         localStorage.setItem('theme', next);
     }
-    if(localStorage.getItem('theme') === 'dark') document.body.setAttribute('data-theme', 'dark');
+    if(localStorage.getItem('theme') === 'dark') {
+        document.body.setAttribute('data-theme', 'dark');
+        document.getElementById('tBtn').innerText = '☾';
+    }
 
     document.getElementById('mDate').valueAsDate = new Date();
 
     async function fetchData() {
-        document.getElementById('sync').style.display = 'block';
         try {
             const r = await fetch(URL);
             DB = await r.json();
             render();
-        } catch(e) { console.error("Error"); }
-        document.getElementById('sync').style.display = 'none';
+        } catch(e) { console.error("Sync Error"); }
     }
 
     function render() {
         const grid = document.getElementById('grid');
         const selD = document.getElementById('mDate').value;
         grid.innerHTML = "";
+        
         const logs = DB.slice(1).sort((a,b) => String(a[0]).localeCompare(String(b[0])));
 
         ITEMS.forEach(item => {
@@ -101,10 +122,11 @@
                     else if(l[2]==='Adjustment') { s.prev=amt; s.in=0; s.out=0; s.ret=0; }
                 }
             });
+
             const bal = (s.prev + s.in) - (s.out + s.ret);
             grid.innerHTML += `
                 <div class="card">
-                    <div class="card-h"><b>${item}</b> <span class="bal-badge" id="bal-${item}">${bal}</span></div>
+                    <div class="card-h"><span class="item-title">${item}</span> <span class="bal-badge" id="bal-${item}">${bal}</span></div>
                     <div class="stats">
                         <div class="s-box"><span class="s-lbl">PREV</span><span class="s-val">${s.prev}</span></div>
                         <div class="s-box" style="color:var(--s)"><span class="s-lbl">IN</span><span class="s-val" id="in-${item}">+${s.in}</span></div>
@@ -117,22 +139,34 @@
                         <button class="btn b-ret" onclick="quick('${item}','RETOUR',1)">RET</button>
                     </div>
                     <div class="manual">
-                        <input type="number" id="amt-${item}" placeholder="Qty">
-                        <button onclick="manual('${item}')" style="background:var(--p); color:white; border:none; padding:10px; border-radius:10px;">Save</button>
+                        <input type="number" id="amt-${item}" placeholder="0.00">
+                        <button class="b-save" onclick="manual('${item}')">SAVE</button>
                     </div>
                 </div>`;
         });
     }
 
+    // المزامنة اللحظية الفائقة
     async function quick(item, type, amt) {
         const balEl = document.getElementById(`bal-${item}`);
+        const dot = document.getElementById('sync-dot');
+        
+        // تعديل فوري في الواجهة (Zero Delay)
         let cur = parseFloat(balEl.innerText);
         balEl.innerText = (type === 'دخل') ? cur + amt : cur - amt;
+        dot.style.display = 'block'; // تنبيه المزامنة في الخلفية
+
         const date = document.getElementById('mDate').value;
-        document.getElementById('sync').style.display = 'block';
-        await fetch(URL, { method: "POST", body: JSON.stringify({ item, type, amount: amt, date }) });
-        document.getElementById('sync').style.display = 'none';
-        fetchData();
+        
+        // إرسال البيانات دون تعطيل المستخدم
+        fetch(URL, { 
+            method: "POST", 
+            body: JSON.stringify({ item, type, amount: amt, date }) 
+        }).then(() => {
+            dot.style.display = 'none';
+            // تحديث البيانات فعلياً بعد الإرسال للتأكد من المزامنة
+            fetchData();
+        });
     }
 
     function manual(item) {
@@ -141,42 +175,55 @@
         document.getElementById(`amt-${item}`).value = "";
     }
 
+    // تقارير احترافية مع أرصدة افتتاحية ونهائية
     function exportPDF(period) {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        doc.setFontSize(16);
-        doc.text(`System 513 - ${period.toUpperCase()} SUMMARY`, 105, 15, { align: 'center' });
+        doc.setFontSize(20);
+        doc.text("INVENTORY SUMMARY REPORT", 105, 15, { align: 'center' });
         
         const now = new Date();
         const summary = {};
-        ITEMS.forEach(it => summary[it] = { in: 0, out: 0, ret: 0, final: 0 });
+        ITEMS.forEach(it => summary[it] = { start: 0, in: 0, out: 0, ret: 0 });
 
-        DB.slice(1).forEach(l => {
+        const logs = DB.slice(1);
+        logs.forEach(l => {
             const it = l[1]; if(!summary[it]) return;
-            const diff = (now - new Date(l[0])) / 86400000;
-            if (period === 'week' ? diff <= 7 : diff <= 30) {
-                const a = parseFloat(l[3]);
-                if(l[2]==='دخل') summary[it].in+=a;
-                else if(l[2]==='خرج') summary[it].out+=a;
-                else if(l[2]==='RETOUR') summary[it].ret+=a;
-                else if(l[2]==='Adjustment') summary[it].final=a;
+            const rowDate = new Date(l[0]);
+            const diff = (now - rowDate) / 86400000;
+            const isPeriod = (period === 'week' ? diff <= 7 : diff <= 30);
+            const amt = parseFloat(l[3]);
+
+            if (diff > (period === 'week' ? 7 : 30)) {
+                // حساب الرصيد قبل بداية الفترة (الافتتاحي)
+                if(l[2]==='دخل') summary[it].start += amt;
+                else if(l[2]==='خرج'||l[2]==='RETOUR') summary[it].start -= amt;
+                else if(l[2]==='Adjustment') summary[it].start = amt;
+            } else {
+                // حركات الفترة
+                if(l[2]==='دخل') summary[it].in += amt;
+                else if(l[2]==='خرج') summary[it].out += amt;
+                else if(l[2]==='RETOUR') summary[it].ret += amt;
+                else if(l[2]==='Adjustment') { summary[it].start = amt; summary[it].in=0; summary[it].out=0; summary[it].ret=0; }
             }
         });
 
         const rows = ITEMS.map(it => {
             const r = summary[it];
-            const bal = (r.in - r.out - r.ret); // تبسيط للمجموع
-            return [it, r.in, r.out, r.ret, "Check App"];
+            const closing = (r.start + r.in) - (r.out + r.ret);
+            return [it, r.start, r.in, r.out, r.ret, closing];
         });
 
         doc.autoTable({
             startY: 25,
-            head: [['Item', 'Total IN', 'Total OUT', 'Returns', 'Note']],
+            head: [['Item', 'Opening', 'In (+)', 'Out (-)', 'Ret (-)', 'Closing']],
             body: rows,
-            theme: 'striped',
-            headStyles: { fillStyle: [0, 122, 255] }
+            theme: 'grid',
+            headStyles: { fillStyle: [0, 122, 255], halign: 'center' },
+            styles: { halign: 'center', fontStyle: 'bold' }
         });
-        doc.save(`513_${period}_report.pdf`);
+
+        doc.save(`Report_513_${period}.pdf`);
     }
 
     fetchData();
